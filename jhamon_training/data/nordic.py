@@ -2,6 +2,60 @@ from numpy.ma import max
 
 
 def dame_nht_data(training_sessions):
+    """
+    Import mechanical and motion capture data. Apply calibration (for force data)
+    and filter data.
+
+    Parameters:
+        session (dict): A dictionary containing information about mechanical and
+                        motion capture data files for a specific session. It should
+                        be structured as follows:
+                        {
+                            'set_1': [['path_to_mech_data_file_1', 'path_to_motion_capture_data_file_1']],
+                            'set_2': [['path_to_mech_data_file_2', 'path_to_motion_capture_data_file_2']],
+                            ...
+                        }
+
+    Returns:
+        dict: A dictionary containing all data synchronized and indexes segmenting
+              repetitions for each set in the session. The structure of the
+              returned dictionary is as follows:
+              {
+                  'set_1': [[repetition_indexes], [synchronized_data]],
+                  'set_2': [[repetition_indexes], [synchronized_data]],
+                  ...
+              }
+
+    Dependencies:
+        This function requires the following modules to be imported:
+        - numpy (np)
+        - scipy (signal)
+        - jhamon.signal.filters (butter_low_filter)
+        - jhamon.signal.mech (_detect_onset)
+        - The _llenahuecos function defined below.
+
+    Notes:
+        - This function is designed to process mechanical and motion capture data
+          for a given session. It synchronizes the data and segmentates repetitions
+          based on the mechanical force data.
+        - The mechanical data should be in a specific format (txt file) and undergo
+          calibration and filtering processes to convert the raw values into
+          corresponding units (e.g., from volts to newtons).
+        - The motion capture data should be in a specific CSV format.
+        - The function internally uses the scipy.signal.butter function to design a
+          low-pass Butterworth filter and jhamon.signal.filters.butter_low_filter to
+          apply the filter to motion capture marker trajectories.
+        - The function uses jhamon.signal.mech._detect_onset to segmentate repetitions
+          based on a force threshold in the mechanical data.
+
+    Example:
+        >>> session_info = {
+                'set_1': [['path_to_mech_data_file_1', 'path_to_motion_capture_data_file_1']],
+                'set_2': [['path_to_mech_data_file_2', 'path_to_motion_capture_data_file_2']]
+            }
+        >>> session_data = damedata(session_info)
+        >>> print(session_data['set_1'])  # Access the processed data for set 1
+    """
 
     import os
     import fnmatch
@@ -10,7 +64,7 @@ def dame_nht_data(training_sessions):
 
     resultados_nordics = dict()
     for participant in training_sessions.keys():
-        print('Amos allá con las sesiones de: ' + participant)
+        print('Vamos allá con las sesiones de: ' + participant)
 
         results_session = dict()
         for tr_session in training_sessions[participant].keys():
@@ -87,7 +141,7 @@ def damedata(session):
         mech_raw = np.genfromtxt((conv(x) for x in open(
             session[serie][0][0])), delimiter=';', skip_header=2)
 
-        # from volts to newtons
+        # From volts to newtons
         mech_raw[:, 1] = ((mech_raw[:, 1])*-1 -
                           0.10632009202953419) / 0.005860458908676682
         mech_raw[:, 2] = ((mech_raw[:, 2])*-1 -
@@ -113,13 +167,11 @@ def damedata(session):
         for ii in range(markers.shape[1]):
             markers_filled[:, ii] = _llenahuecos(time, markers[:, ii])
 
-        # markers_filled = np.where(np.isnan(markers), np.ma.array(markers, mask=np.isnan(markers)).mean(axis=0), markers)
-
-        # ! Filter motion capture data; USE butter_low_filter() ?
+        # Low pass filter marker trajectories
         from scipy.signal import butter, filtfilt
         freq = 100
         C = 0.802
-        cut_hz = 5
+        cut_hz = 6
         b, a = butter(2, (cut_hz / (freq / 2) / C), btype='low')
         markers_filt = np.transpose(np.asarray(
             [filtfilt(b, a, markers_filled[:, jj]) for jj in range(markers_filled.shape[1])]))
@@ -131,7 +183,7 @@ def damedata(session):
             0, len(mech_resampled) / 100, num=len(mech_resampled)))
         DATA = np.column_stack((time, mech_resampled, markers_filt))
 
-        # Segmenta repetitions
+        # Segmentate repetitions
         from jhamon.signal.mech import _detect_onset
         force_threshold = DATA[:, 2].max() * 0.4
         dins = _detect_onset(DATA[:, 2], threshold=force_threshold,
@@ -155,7 +207,42 @@ def damedata(session):
 
 
 def _llenahuecos(time, y):
+    """
+    Fill gaps in a time series by performing linear interpolation.
 
+    This function fills the gaps in the input time series `y` by using linear
+    interpolation based on the available data points at corresponding `time`
+    values. Any missing or invalid data (NaNs) in `y` will be replaced with
+    interpolated values using linear extrapolation.
+
+    Parameters:
+        time (array_like): A 1-D array containing time values corresponding to
+                           the data points in `y`.
+        y (array_like): A 1-D array containing the time series data with gaps.
+
+    Returns:
+        array_like: A 1-D array containing the time series data with gaps
+                    filled using linear interpolation.
+
+    Dependencies:
+        This function requires the following modules to be imported:
+        - scipy
+        - numpy
+
+    Notes:
+        - The input `time` and `y` arrays should have the same length.
+        - The function internally uses scipy.interpolate.interp1d to perform
+          the linear interpolation. The 'fill_value' parameter is set to
+          'extrapolate' to handle data outside the range of the available
+          points by performing linear extrapolation.
+
+    Example:
+        >>> time = [0, 1, 3, 6, 10]
+        >>> y = [1, 2, np.nan, 4, np.nan]
+        >>> filled_y = _llenahuecos(time, y)
+        >>> print(filled_y)
+        [1.  2.  3.  4.  4.]
+    """
     import scipy
     import numpy as np
 
@@ -170,6 +257,9 @@ def _llenahuecos(time, y):
 
 
 def arregla_errores(session_data, participant, tr_session):
+    """These are manual exeptions in some isolated repetitions where for some reason the
+    criteria to segmentate signal does not apply. These have been manually checked and processed.
+    """
 
     ###########################################################################
     if participant in ['jhamon05'] and tr_session in ['tr_1']:
