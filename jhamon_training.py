@@ -57,8 +57,6 @@ sns.lineplot(x='timepoint', y='value', hue='tr_group', data=dw)
 plt.show()
 
 # save discrete variables data frame
-
-
 def nht_disc_todf(my_dict):
 
     from jhamon.data import alocate_training_group
@@ -165,8 +163,6 @@ torque_NH['tr_2'].keys()
 
 ['ti'].clusters
 
-
-importlib.reload(jhamon.data.training)
 
 
 v_NH = spmtr.spm_nh_kinetics(df=training_dfilt[(
