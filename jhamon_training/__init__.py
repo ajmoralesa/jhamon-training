@@ -13,7 +13,7 @@ def check_result_file(pathtodata, res_file):
     from jhamon.saveload import save_obj
     from pathlib import Path
 
-    my_file = Path(pathtodata / "_RESULTS" / res_file).exists()
+    my_file = Path(pathtodata / "_RESULTS_TRAINING" / res_file).exists()
 
     if not my_file:
         print('File does not exist! Computing paths and getting data...')
@@ -29,7 +29,7 @@ def check_result_file(pathtodata, res_file):
             ik_paths = pathutils.dame_ik_paths(path_to_folders=pathtodata)
             my_dict = dame_ik_data(ik_paths)
 
-        save_obj(obj=my_dict, path=pathtodata / '_RESULTS' / res_file)
+        save_obj(obj=my_dict, path=pathtodata / '_RESULTS_TRAINING' / res_file)
 
         return my_dict
 
@@ -37,6 +37,7 @@ def check_result_file(pathtodata, res_file):
         print('File results exists! Loading it...')
 
         from jhamon.saveload import load_obj
-        raw_data = load_obj(path=(pathtodata / '_RESULTS'), name=res_file)
+        raw_data = load_obj(
+            path=(pathtodata / '_RESULTS_TRAINING'), name=res_file)
 
         return raw_data
