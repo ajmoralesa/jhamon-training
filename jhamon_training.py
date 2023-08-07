@@ -1,7 +1,6 @@
 # This script generates results of the functional data recorded during the
 # Nordic Hamstring and Isokinetic training sessions.
 
-from jhamon.signal.tnorm import tnorm
 from pathlib import Path
 from jhamon_training import check_result_file
 
@@ -57,6 +56,8 @@ sns.lineplot(x='timepoint', y='value', hue='tr_group', data=dw)
 plt.show()
 
 # save discrete variables data frame
+
+
 def nht_disc_todf(my_dict):
 
     from jhamon.data import alocate_training_group
@@ -162,7 +163,6 @@ tr_progression.keys()
 torque_NH['tr_2'].keys()
 
 ['ti'].clusters
-
 
 
 v_NH = spmtr.spm_nh_kinetics(df=training_dfilt[(

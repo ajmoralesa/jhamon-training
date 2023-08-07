@@ -384,7 +384,7 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
     from jhamon.signal.nordic import dame_inercia
     from jhamon.signal.filters import butter_low_filter
     from jhamon.signal.mech import _detect_onset
-    from jhamon.signal.tnorm import tnorm
+    from jhamon_training.kinematics import calculate_knee_velocity, calculate_hip_velocity
 
     results_session = dict()
     for serie in session_data.keys():
@@ -398,6 +398,7 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
             print(rep_num)
             repe = DATA[indexes[0, repetition]:indexes[1, repetition], :]
 
+            # Correct manually some different setup exceptions
             if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
                 marker1 = np.array(repe[:, [4, 3]])
                 marker2 = np.array(repe[:, [7, 6]])
@@ -422,41 +423,11 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                 marker5 = np.array(repe[:, [16, 17]])
                 marker6 = np.array(repe[:, [19, 20]])
 
-            knee_ang = np.zeros(len(repe))
-            for ii in np.arange(len(marker1)):
-                x1, y1, x2, y2 = (marker3[ii, 0], marker3[ii, 1],
-                                  marker4[ii, 0], marker4[ii, 1])
+            knee_rad, knee_v_rad, knee_acc = calculate_knee_velocity(
+                marker3, marker4, marker5, marker6, freq=100)
 
-                x3, y3, x4, y4 = (marker5[ii, 0], marker5[ii, 1],
-                                  marker6[ii, 0], marker6[ii, 1])
-
-                thigh_ang = np.arctan2(x2 - x1, y2 - y1)
-                shank_ang = np.arctan2(x4 - x3, y4 - y3)
-                knee_ang[ii] = shank_ang - thigh_ang
-
-            hip_ang = np.zeros(len(repe))
-            for ii in np.arange(len(marker1)):
-                x1, y1, x2, y2 = (marker1[ii, 0], marker1[ii, 1],
-                                  marker2[ii, 0], marker2[ii, 1])
-                x3, y3, x4, y4 = (marker3[ii, 0], marker3[ii, 1],
-                                  marker4[ii, 0], marker4[ii, 1])
-
-                upperbody_ang = np.arctan2(x2 - x1, y2 - y1)
-                thigh_ang = np.arctan2(x4 - x3, y4 - y3)
-                hip_ang[ii] = upperbody_ang - thigh_ang
-
-            # Important to do `np.unwrap` on radians and then convert to deg
-            knee_rad = np.unwrap(knee_ang)
-            hip_rad = np.unwrap(hip_ang)
-
-            # Angular velocities
-            freq = 100
-            knee_v_rad = (np.diff(knee_rad)*freq)*-1
-            hip_v_rad = (np.diff(hip_rad)*freq)*-1
-
-            # Acceleration
-            knee_acc = np.diff(knee_v_rad)
-            hip_acc = np.diff(hip_v_rad)
+            hip_rad, hip_v_rad, hip_acc = calculate_hip_velocity(
+                marker1, marker2, marker3, marker4, freq=100)
 
             # All data rep
             D = np.column_stack((repe[:-2, :3], knee_rad[:-2], hip_rad[:-2],
