@@ -1,4 +1,5 @@
 from numpy.ma import max
+import logging
 
 
 def dame_nht_data(training_sessions):
@@ -60,15 +61,17 @@ def dame_nht_data(training_sessions):
     import os
     import fnmatch
 
+    from jhamon_training.data import frames
     from jhamon_training.data.nordic import damedata, arregla_errores, dame_pesocorporal, analizame_curvas
 
     resultados_nordics = dict()
     for participant in training_sessions.keys():
-        print('Vamos allá con las sesiones de: ' + participant)
-
+        # for participant in ['jhamon04', 'jhamon05', 'jhamon06',
+        #                     'jhamon09', 'jhamon10', 'jhamon11', 'jhamon12',
+        #                     'jhamon14', 'jhamon15', 'jhamon16']:
         results_session = dict()
         for tr_session in training_sessions[participant].keys():
-            print(str('Sesión de entrenamiento: ') + tr_session)
+            # print(str(participant + '; Sesión de entrenamiento: ') + tr_session)
 
             data_path = training_sessions[participant][tr_session]
             files = os.listdir(data_path)
@@ -106,6 +109,9 @@ def dame_nht_data(training_sessions):
                                                            tr_session)
 
             resultados_nordics[participant] = results_session
+
+    # Remove empty repetitions or sessions
+    resultados_nordics = frames.remove_empty(resultados_nordics)
 
     return resultados_nordics
 
@@ -161,7 +167,7 @@ def damedata(session):
         # array with only x,y,z axes for each marker in CM
         markers = np.asarray(mo_data[:, 2:])
 
-        # Fill gaps with quadratic interpolation
+        # Fill gaps with linear interpolation
         time = mo_data[:, 1]
         markers_filled = np.zeros((len(markers), markers.shape[1]))
         for ii in range(markers.shape[1]):
@@ -191,7 +197,7 @@ def damedata(session):
         # thresholds not precise
         indexes = np.array([dins[:, 0] - 350, dins[:, 1] + 300])
 
-        # If repetition 1 started without enough baseline time...
+        # If repetition 1 started without enough baseline time set index as 1
         if indexes[0, 0] < 0:
             indexes[0, 0] = 1
 
@@ -338,46 +344,10 @@ def dame_pesocorporal(participant, datapath):
     return(peso)
 
 
-def linear_tnorm(y, num_points=101, plot=False):
-
-    import numpy as np
-    import matplotlib.pyplot as plt
-
-    """
-    Linear time normalization from 0 to 100%.
-
-    Parameters:
-        y (array_like): 1-D array of data points to be interpolated.
-        num_points (int, optional): Number of points at the interpolation (default is 101).
-        plot (bool, optional): If True, plot the original data and the interpolated data (default is False).
-
-    Returns:
-        yn (ndarray): Interpolated data points.
-        tn (ndarray): New x values (from 0 to 100) for the interpolated data.
-    """
-    y = np.asarray(y)
-
-    # Original time points
-    t = np.linspace(0, 100, y.size)
-
-    # New time points
-    tn = np.linspace(0, 100, num_points)
-
-    # Perform linear interpolation
-    yn = np.interp(tn, t, y)
-
-    if plot:
-        plt.plot(t, y, 'o-', label='Original Data')
-        plt.plot(tn, yn, '.-', label='Interpolated Data')
-        plt.xlabel('[%]')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
-
-    return yn, tn
-
-
 def analizame_curvas(session_data, pesocorporal, participant, tr_session):
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[logging.FileHandler("logfile.log"), logging.StreamHandler()])
 
     import numpy as np
     import pandas as pd
@@ -385,198 +355,319 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
     from jhamon.signal.filters import butter_low_filter
     from jhamon.signal.mech import _detect_onset
     from jhamon_training.kinematics import calculate_knee_velocity, calculate_hip_velocity
+    from jhamon_training.utils import linear_tnorm
 
     results_session = dict()
     for serie in session_data.keys():
-        print(serie)
         indexes = session_data[serie][0][0]
         DATA = session_data[serie][1][0]
 
         results = dict()
         for repetition in range(indexes.shape[1]):
             rep_num = 'rep_' + str(repetition + 1)
-            print(rep_num)
+            print(participant + ' ' + tr_session + ' ' + serie + ' ' + rep_num)
             repe = DATA[indexes[0, repetition]:indexes[1, repetition], :]
 
-            # Correct manually some different setup exceptions
-            if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
-                marker1 = np.array(repe[:, [4, 3]])
-                marker2 = np.array(repe[:, [7, 6]])
-                marker3 = np.array(repe[:, [10, 9]])
-                marker4 = np.array(repe[:, [13, 12]])
-                marker5 = np.array(repe[:, [16, 15]])
-                marker6 = np.array(repe[:, [19, 18]])
+            # Create empty dictionary with all variables of interest
+            vdict = {
+                'REP_time': 0,
+                'hip_ROM': 0,
+                'hip_v_mean': 0,
+                'hip_v_peak': 0,
+                'knee_ROM': 0,
+                'knee_v_mean': 0,
+                'knee_v_peak': 0,
+                'knee_angDWA': 0,
+                'knee_ROMDWA': 0,
+                'knee_fpeak': 0,
+                'knee_ROMfpeak': 0,
+                'knee_tor_mean': 0,
+                'knee_tor_peak': 0,
+                'knee_impulse': 0,
+                'knee_work': 0
+            }
 
-            if participant in ['jhamon10'] and tr_session in ['tr_1']:
-                marker1 = np.array(repe[:, [4, 3]])
-                marker2 = np.array(repe[:, [7, 6]])
-                marker3 = np.array(repe[:, [10, 9]])
-                marker4 = np.array(repe[:, [13, 12]])
-                marker5 = np.array(repe[:, [16, 15]])
-                marker6 = np.array(repe[:, [19, 18]])
+            normcurves = {
+                'force': [],
+                'torque': [],
+                'knee_ROM': [],
+                'hip_ROM': [],
+                'knee_v': [],
+                'hip_v': [],
+                'knee_work': []
+            }
 
-            else:
-                marker1 = np.array(repe[:, [4, 5]])
-                marker2 = np.array(repe[:, [7, 8]])
-                marker3 = np.array(repe[:, [10, 11]])
-                marker4 = np.array(repe[:, [13, 14]])
-                marker5 = np.array(repe[:, [16, 17]])
-                marker6 = np.array(repe[:, [19, 20]])
+            try:
+                # Correct manually some different setup exceptions
+                if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
+                    marker1 = np.array(repe[:, [4, 3]])
+                    marker2 = np.array(repe[:, [7, 6]])
+                    marker3 = np.array(repe[:, [10, 9]])
+                    marker4 = np.array(repe[:, [13, 12]])
+                    marker5 = np.array(repe[:, [16, 15]])
+                    marker6 = np.array(repe[:, [19, 18]])
 
-            knee_rad, knee_v_rad, knee_acc = calculate_knee_velocity(
-                marker3, marker4, marker5, marker6, freq=100)
+                if participant in ['jhamon10'] and tr_session in ['tr_1']:
+                    marker1 = np.array(repe[:, [4, 3]])
+                    marker2 = np.array(repe[:, [7, 6]])
+                    marker3 = np.array(repe[:, [10, 9]])
+                    marker4 = np.array(repe[:, [13, 12]])
+                    marker5 = np.array(repe[:, [16, 15]])
+                    marker6 = np.array(repe[:, [19, 18]])
 
-            hip_rad, hip_v_rad, hip_acc = calculate_hip_velocity(
-                marker1, marker2, marker3, marker4, freq=100)
+                else:
+                    marker1 = np.array(repe[:, [4, 5]])
+                    marker2 = np.array(repe[:, [7, 8]])
+                    marker3 = np.array(repe[:, [10, 11]])
+                    marker4 = np.array(repe[:, [13, 14]])
+                    marker5 = np.array(repe[:, [16, 17]])
+                    marker6 = np.array(repe[:, [19, 20]])
 
-            # All data rep
-            D = np.column_stack((repe[:-2, :3], knee_rad[:-2], hip_rad[:-2],
-                                 knee_v_rad[:-1], hip_v_rad[:-1],
-                                 knee_acc, hip_acc,
-                                 marker1[:-2], marker2[:-2], marker3[:-2],
-                                 marker4[:-2], marker5[:-2], marker6[:-2]))
+                knee_rad, knee_v_rad, knee_acc = calculate_knee_velocity(
+                    marker3, marker4, marker5, marker6, freq=100)
 
-            D[:, 0] = np.transpose(np.linspace(0, len(D) / 100, num=len(D)))
+                hip_rad, hip_v_rad, hip_acc = calculate_hip_velocity(
+                    marker1, marker2, marker3, marker4, freq=100)
 
-            # Flipped calibrations
-            if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
-                D[:, 5] = D[:, 5] * -1
+                # All data rep
+                D = np.column_stack((repe[:-2, :3], knee_rad[:-2], hip_rad[:-2],
+                                    knee_v_rad[:-1], hip_v_rad[:-1],
+                                    knee_acc, hip_acc,
+                                    marker1[:-2], marker2[:-2], marker3[:-2],
+                                    marker4[:-2], marker5[:-2], marker6[:-2]))
 
-            if participant in ['jhamon10'] and tr_session in ['tr_1']:
-                D[:, 5] = D[:, 5] * -1
+                D[:, 0] = np.transpose(
+                    np.linspace(0, len(D) / 100, num=len(D)))
 
-            # Find start of repetition from torque (filtered)
-            force = D[:, 2]  # torque
+                # Flipped calibrations
+                if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
+                    D[:, 5] = D[:, 5] * -1
 
-            # Filter
-            force_filt = butter_low_filter(force, fs=100, cut_hz=3, order=2)
+                if participant in ['jhamon10'] and tr_session in ['tr_1']:
+                    D[:, 5] = D[:, 5] * -1
 
-            dif_force = np.diff(force_filt)
-            onset_1 = _detect_onset(force_filt, max(
-                force_filt[:]) * 0.25, n_above=80, n_below=0, show=False)[0, 0]
-            onset_precise = dif_force[:onset_1 + 5] < 0
+                # Find start of repetition from torque (filtered)
+                force = D[:, 2]  # torque
 
-            if np.where(onset_precise)[0].shape[0] == 0:
-                force_onset = 0
-            else:
-                force_onset = np.where(onset_precise)[0][-1]
+                # Filter
+                force_filt = butter_low_filter(
+                    force, fs=100, cut_hz=3, order=2)
 
-            if force[force_onset] > max(force_filt[:]) * 0.25:
-                force_onset = np.where(onset_precise)[0][-2]
+                dif_force = np.diff(force_filt)
+                onset_1 = _detect_onset(force_filt, max(
+                    force_filt[:]) * 0.25, n_above=80, n_below=0, show=False)[0, 0]
+                onset_precise = dif_force[:onset_1 + 5] < 0
 
-            # Set a maximum index at which velocity is evaluated (i.e.
-            # when force < max(force)*0.2)
-            force_offset = _detect_onset(force_filt, max(force_filt[:]) * 0.3,
-                                         n_above=80, n_below=0, show=False)[0, 1]
-            vmax_idx = D[force_onset:force_offset + 25, 5].argmax() + \
-                force_onset
+                if np.where(onset_precise)[0].shape[0] == 0:
+                    force_onset = 0
+                else:
+                    force_onset = np.where(onset_precise)[0][-1]
 
-            # manual fix
-            if participant in ['jhamon09'] and tr_session in ['tr_3']:
-                vmax_idx = D[force_onset:force_offset +
-                             250, 5].argmax() + force_onset
+                if force[force_onset] > max(force_filt[:]) * 0.25:
+                    force_onset = np.where(onset_precise)[0][-2]
 
-            # Final data of segmented repetitions
-            REP = D[force_onset:vmax_idx, :]
-            knee_ROM = np.abs(REP[0, 3] - REP[-1, 3]) * 180 / np.pi
-            hip_ROM = np.abs(REP[1, 4] - REP[-1, 4]) * 180 / np.pi
+                # Set a maximum index at which velocity is evaluated
+                force_offset = _detect_onset(force_filt, max(force_filt[:]) * 0.3,
+                                             n_above=80, n_below=0, show=False)[0, 1]
+                force_offset = force_offset + 25
 
-            # Distances between markers for torque calculations
-            x1, y1, x2, y2 = (marker4[0, 0], marker4[0, 1],
-                              marker6[0, 0], marker6[0, 1])
+                # Find the index at which the velocity is minimum
+                vmin_idx = D[force_onset:, 5].argmin() + force_onset
 
-            shank_length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-            lever_arm = shank_length - 0.05
+                # Handle the case where force_offset happens before vmin_idx
+                if force_offset < vmin_idx:
+                    error_message = f"""Error processing in participant = {participant},
+                        tr_session = {tr_session},
+                        serie = {serie},
+                        rep = {rep_num}: force_offset < vmin_idx (force offset detected too early)"""
+                    logging.error(error_message)
+                    continue
 
-            if participant in ['jhamon12'] and tr_session in ['tr_5']:
-                lever_arm = 0.32231839872197643
+                vmax_idx = D[vmin_idx:force_offset, 5].argmax() + vmin_idx
 
-            # Calculate variables of interest and store them
-            knee_v_mean = np.abs(REP[:, 5]).mean() * 180 / np.pi
-            knee_v_peak = np.abs(REP[:, 5]).max() * 180 / np.pi
-            hip_v_mean = np.abs(REP[:, 6]).mean() * 180 / np.pi
-            hip_v_peak = np.abs(REP[:, 6]).max() * 180 / np.pi
+                # manual fix
+                if participant in ['jhamon09'] and tr_session in ['tr_3']:
+                    vmax_idx = D[force_onset:force_offset +
+                                 250, 5].argmax() + force_onset
 
-            # Find angle at which velocity sudenly increases
-            vmax_REP_idx = REP[:, 5].argmax()
-            angDWA_idx = np.diff(REP[:vmax_REP_idx, 5]) < 0
-            angDWA_idx2 = np.where(angDWA_idx)[0][-1]
+                # Final data of segmented repetitions
+                REP = D[force_onset:vmin_idx, :]
 
-            # angle at which velocity increases
-            knee_angDWA = np.abs(REP[angDWA_idx2, 3] * 180 / np.pi)
+                # Check if REP is empty
+                if REP.size == 0:
+                    # Handle the case where REP is empty
+                    error_message = f"""Error processing in participant = {participant},
+                        tr_session = {tr_session},
+                        serie = {serie},
+                        rep = {rep_num}: REP is empty"""
+                    logging.error(error_message)
+                    continue
 
-            # % of ROM at which angDWA occurs
-            knee_ROMDWA = (angDWA_idx2 * 100) / len(REP)
+                knee_ROM = np.abs(REP[0, 3] - REP[-1, 3]) * 180 / np.pi
+                hip_ROM = np.abs(REP[1, 4] - REP[-1, 4]) * 180 / np.pi
 
-            # Angle at which peak force occurs
-            fpeak_REP_idx = REP[:, 2].argmax()
+                # Distances between markers for torque calculations
+                x1, y1, x2, y2 = (marker4[0, 0], marker4[0, 1],
+                                  marker6[0, 0], marker6[0, 1])
 
-            # angle at peak force
-            knee_fpeak = np.abs(REP[fpeak_REP_idx, 3] * 180 / np.pi)
-            knee_ROMfpeak = (fpeak_REP_idx * 100) / len(REP)
+                shank_length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+                lever_arm = shank_length - 0.05
 
-            # Torque, time, work
-            knee_tor_mean = REP[:, 2].mean() * lever_arm
-            knee_tor_peak = REP[:, 2].max() * lever_arm
+                if participant in ['jhamon12'] and tr_session in ['tr_5']:
+                    lever_arm = 0.32231839872197643
 
-            REP_time = len(REP) / freq  # in seconds
-            knee_impulse = knee_tor_mean * REP_time
-            knee_work = np.abs(
-                np.trapz(REP[:, 2] * lever_arm, REP[:, 3]))  # Jules
+                # Calculate variables of interest and store them
+                knee_v_mean = np.abs(REP[:, 5]).mean() * 180 / np.pi
+                knee_v_peak = np.abs(REP[:, 5]).max() * 180 / np.pi
+                hip_v_mean = np.abs(REP[:, 6]).mean() * 180 / np.pi
+                hip_v_peak = np.abs(REP[:, 6]).max() * 180 / np.pi
 
-            # Torque inertia corrected
-            bm = pesocorporal
-            ex_weight = 0
-            I_knee = dame_inercia(REP, bm, ex_weight)
+                # Find angle at which velocity sudenly increases
+                vmax_REP_idx = REP[:, 5].argmin()
+                angDWA_idx = np.diff(REP[:vmax_REP_idx, 5]) < 0
+                angDWA_idx2 = np.where(angDWA_idx)[0][-1]
 
-            # Apply correction factor to inertia, based on the force developed
-            torque_corrected = np.zeros(len(REP))
-            for ii in range(len(REP)):
-                torque_measured = REP[ii, 2] * lever_arm
-                torque_corrected[ii] = -torque_measured + \
-                    ((I_knee[ii] * REP[ii, 7]) / 2)
+                # angle at which velocity increases
+                knee_angDWA = np.abs(REP[angDWA_idx2, 3] * 180 / np.pi)
 
-            normcurves = dict()
-            normcurves = {'force': linear_tnorm(REP[:, 2])[0],
-                          'torque': linear_tnorm(REP[:, 2]*lever_arm)[0],
-                          'knee_ROM': linear_tnorm((REP[:, 3] * 180 / np.pi))[0],
-                          'hip_ROM': linear_tnorm((REP[:, 4] * 180 / np.pi))[0],
-                          'knee_v': linear_tnorm((REP[:, 5] * 180 / np.pi))[0],
-                          'hip_v': linear_tnorm((REP[:, 6] * 180 / np.pi))[0],
-                          'knee_work': linear_tnorm(((REP[:, 2] * lever_arm)*REP[:, 3]))[0]}
-            normcurvesdf = pd.DataFrame(data=normcurves)
+                # % of ROM at which angDWA occurs
+                knee_ROMDWA = (angDWA_idx2 * 100) / len(REP)
 
-            curves = dict()
-            curves = {'force': REP[:, 2],
-                      'torque': REP[:, 2] * lever_arm,
-                      'knee_ROM': REP[:, 3] * 180 / np.pi,
-                      'hip_ROM': REP[:, 4] * 180 / np.pi,
-                      'knee_v': REP[:, 5] * 180 / np.pi,
-                      'hip_v': REP[:, 6] * 180 / np.pi}
-            curvesdf = pd.DataFrame(data=curves)
+                # Angle at which peak force occurs
+                fpeak_REP_idx = REP[:, 2].argmax()
+                # Knee angle at which peak force occurs
+                knee_fpeak = np.abs(REP[fpeak_REP_idx, 3] * 180 / np.pi)
+                # Percentage of ROM at which peak force occurs
+                knee_ROMfpeak = (fpeak_REP_idx * 100) / len(REP)
 
-            # save all discrete results in a dict (vdict)
-            vars_nam = ['REP_time', 'hip_ROM', 'hip_v_mean', 'hip_v_peak', 'knee_ROM', 'knee_v_mean',
-                        'knee_v_peak', 'knee_angDWA', 'knee_ROMDWA', 'knee_fpeak',
-                        'knee_ROMfpeak', 'knee_tor_mean', 'knee_tor_peak', 'knee_impulse', 'knee_work']
+                # Torque, time, work
+                knee_tor_mean = REP[:, 2].mean() * lever_arm
+                knee_tor_peak = REP[:, 2].max() * lever_arm
 
-            vars_discrete = np.array((REP_time, hip_ROM, hip_v_mean, hip_v_peak,
-                                      knee_ROM, knee_v_mean, knee_v_peak,
-                                      knee_angDWA, knee_ROMDWA,
-                                      knee_fpeak, knee_ROMfpeak,
-                                      knee_tor_mean, knee_tor_peak,
-                                      knee_impulse, knee_work))
+                freq = 100
+                REP_time = len(REP) / freq  # in seconds
+                knee_impulse = knee_tor_mean * REP_time
+                knee_work = np.abs(
+                    np.trapz(REP[:, 2] * lever_arm, REP[:, 3]))  # Jules
 
-            vdict = dict(zip(vars_nam, vars_discrete))
+                # Torque inertia corrected
+                bm = pesocorporal
+                ex_weight = 0
+                I_knee = dame_inercia(REP, bm, ex_weight)
 
-            # list with both discrete results and time normalized curves
-            results[rep_num] = [vdict, normcurves]
+                # Apply correction factor to inertia, based on the force developed
+                torque_corrected = np.zeros(len(REP))
+                for ii in range(len(REP)):
+                    torque_measured = REP[ii, 2] * lever_arm
+                    torque_corrected[ii] = -torque_measured + \
+                        ((I_knee[ii] * REP[ii, 7]) / 2)
 
-            resultsdf = pd.DataFrame(results)
+                normcurves = dict()
+                normcurves = {'force': linear_tnorm(REP[:, 2])[0],
+                              'torque': linear_tnorm(REP[:, 2]*lever_arm)[0],
+                              'knee_ROM': linear_tnorm((np.abs(REP[:, 3]) * 180 / np.pi))[0],
+                              'knee_v': linear_tnorm(np.abs(REP[:, 5] * 180 / np.pi))[0],
+                              #   'hip_ROM': linear_tnorm((REP[:, 4] * 180 / np.pi))[0],
+                              #   'hip_v': linear_tnorm((REP[:, 6] * 180 / np.pi))[0],
+                              'knee_work': linear_tnorm(((REP[:, 2] * lever_arm)*REP[:, 3]))[0]}
 
-        #    # Plot to check onsets and vmx
-        #    plotea_nordic(D, force_onset, vmax_idx, angDWA_idx2)
+                # save all discrete results in a dict (vdict)
+                vars_nam = ['REP_time', 'hip_ROM', 'hip_v_mean', 'hip_v_peak', 'knee_ROM', 'knee_v_mean',
+                            'knee_v_peak', 'knee_angDWA', 'knee_ROMDWA', 'knee_fpeak',
+                            'knee_ROMfpeak', 'knee_tor_mean', 'knee_tor_peak', 'knee_impulse', 'knee_work']
 
+                vars_discrete = np.array((REP_time, hip_ROM, hip_v_mean, hip_v_peak,
+                                          knee_ROM, knee_v_mean, knee_v_peak,
+                                          knee_angDWA, knee_ROMDWA,
+                                          knee_fpeak, knee_ROMfpeak,
+                                          knee_tor_mean, knee_tor_peak,
+                                          knee_impulse, knee_work))
+
+                vdict = dict(zip(vars_nam, vars_discrete))
+
+                # Store the vdict for each repetition in the results dictionary
+                results[rep_num] = [vdict, normcurves]
+
+            except Exception as e:
+                error_message = f"""Error processing in participant = {participant},
+                    tr_session = {tr_session},
+                    serie = {serie},
+                    rep = {rep_num}: {str(e)}"""
+                logging.error(error_message)
+                continue
+
+        # # Plot to check onsets and vmx
+        # plotea_nordic(D, force_onset, vmax_idx, angDWA_idx2)
+
+        # After collecting all repetitions, create a DataFrame for the results
+        resultsdf = pd.DataFrame(results)
         results_session[serie] = resultsdf
 
     return(results_session)
+
+
+def make_patch_spines_invisible(ax):
+    ax.set_frame_on(True)
+    ax.patch.set_visible(False)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+
+
+def plotea_nordic(data, force_onset, vmax_idx, angDWA_idx2):
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    fig, host = plt.subplots()
+    fig.subplots_adjust(right=0.75)
+
+    par1 = host.twinx()
+    par2 = host.twinx()
+
+    # Offset the right spine of par2.  The ticks and label have already been
+    # placed on the right by twinx above.
+    par2.spines["right"].set_position(("axes", 1.2))
+    # Having been created by twinx, par2 has its frame off, so the line of its
+    # detached spine is invisible.  First, activate the frame but make the
+    # patch and spines invisible.
+    make_patch_spines_invisible(par2)
+    # Second, show the right spine.
+    par2.spines["right"].set_visible(True)
+
+    p1, = host.plot(data[:, 0], data[:, 2], label="Torque (Nm)")
+    p2, = par1.plot(data[:, 0], data[:, 3] * 180 / np.pi,
+                    "r-", label="Knee angle")
+    p3, = par2.plot(data[:, 0], data[:, 5] * 180 / np.pi,
+                    "g-", label="Knee Velocity")
+
+    host.set_xlabel("Time (s)")
+    host.set_ylabel("Force (N)")
+    par1.set_ylabel("Knee angle (deg)")
+    par2.set_ylabel("Knee velocity (deg/s)")
+
+    host.yaxis.label.set_color(p1.get_color())
+    par1.yaxis.label.set_color(p2.get_color())
+    par2.yaxis.label.set_color(p3.get_color())
+
+    tkw = dict(size=4, width=1.5)
+    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
+    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
+    par2.tick_params(axis='y', colors=p3.get_color(), **tkw)
+    host.tick_params(axis='x', **tkw)
+
+    lines = [p1, p2, p3]
+    host.legend(lines, [l.get_label() for l in lines])
+
+    [host.axvline(_x, linewidth=1, color='k', ls='--') for _x in np.array(
+        (data[force_onset, 0], data[vmax_idx, 0],
+         data[angDWA_idx2 + force_onset, 0]))]
+
+    labels = ['force onset', 'peak velocity', 'angDWA']
+    for i, x in enumerate(np.array((data[force_onset, 0], data[vmax_idx, 0],
+                                    data[angDWA_idx2 + force_onset, 0])) + 0.02):
+        host.text(x, 50, labels[i], rotation=90, verticalalignment='center')
+
+    host.axvspan(data[force_onset, 0], data[vmax_idx, 0],
+                 color='red', alpha=0.1)
+    host.grid()
+    plt.show()

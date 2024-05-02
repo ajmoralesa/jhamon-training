@@ -25,7 +25,7 @@ def check_result_file(pathtodata, res_file):
             my_dict = dame_nht_data(nht_paths)
 
         if res_file == 'ikt_results.pkl':
-            from jhamon.data.ik import dame_ik_data
+            from jhamon_training.data.ik import dame_ik_data
             ik_paths = pathutils.dame_ik_paths(path_to_folders=pathtodata)
             my_dict = dame_ik_data(ik_paths)
 
