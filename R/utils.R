@@ -3,7 +3,7 @@ library(arrow)
 library(forcats)
 
 # pthtres <- "E:/_RESULTS_TRAINING/"
-pthtres <- "C:/Users/amorales/Desktop/_RESULTS_TRAINING"
+pthtres <- "/Volumes/jHamON/_RESULTS_TRAINING"
 
 damecurvas <- function(filename, pathtofile) {
     path <- str_c(pathtofile, filename)

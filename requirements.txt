@@ -1,0 +1,21 @@
+click==8.1.8
+contourpy==1.3.0
+cycler==0.12.1
+fonttools==4.57.0
+importlib_resources==6.5.2
+-e git+https://github.com/ajmoralesa/jhamon.git@d1d7d3b98b8d68dc948f16b9ebf2c4873bfa62f6#egg=jhamon
+-e git+https://github.com/ajmoralesa/jhamon-training.git@45c60e084d6bc04f97e712201991410277cf881f#egg=jhamon_training
+kiwisolver==1.4.7
+matplotlib==3.9.4
+numpy==2.0.2
+packaging==24.2
+pandas==2.2.3
+pillow==11.2.1
+pyarrow==19.0.1
+pyparsing==3.2.3
+python-dateutil==2.9.0.post0
+pytz==2025.2
+scipy==1.13.1
+six==1.17.0
+tzdata==2025.2
+zipp==3.21.0
