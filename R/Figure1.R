@@ -34,10 +34,44 @@ protocol <- tibble(
     )
 )
 
-repes %>%
+# Define weekly boundaries for background rectangles
+week_mapping <- tibble(
+    tr_session = str_c("tr_", 1:15),
+    week = c(rep(1:7, each = 2), 8) # Assign 2 sessions/week, last week gets 1
+)
+# Ensure factor levels match the main data for correct numeric mapping
+week_mapping$tr_session <- factor(week_mapping$tr_session, levels = levels(repes$tr_session))
+
+# Calculate numeric boundaries based on factor levels
+rect_data <- week_mapping %>%
+    mutate(session_num = as.numeric(tr_session)) %>%
+    group_by(week) %>%
+    summarise(
+        xmin = min(session_num) - 0.5, # Offset by 0.5 for full bar coverage
+        xmax = max(session_num) + 0.5,
+        .groups = "drop"
+    ) %>%
+    mutate(
+        ymin = -Inf, # Span the entire height
+        ymax = Inf,
+        # Alternate fill color based on even/odd week number
+        fill_color = factor(week %% 2)
+    )
+
+# Create the plot
+plot_data <- repes %>%
     group_by(tr_session) %>%
-    summarise(totalrep = sum(reps)) %>%
-    ggplot(aes(y = totalrep, x = tr_session)) +
+    summarise(totalrep = sum(reps))
+
+ggplot(plot_data, aes(y = totalrep, x = tr_session)) +
+    # Add background rectangles BEFORE bars
+    geom_rect(
+        data = rect_data,
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = fill_color),
+        inherit.aes = FALSE, # Don't inherit main aes mappings
+        alpha = 0.2 # Set transparency
+    ) +
+    scale_fill_manual(values = c("0" = "grey80", "1" = "grey90"), guide = "none") + # Define colors and hide legend
     geom_bar(stat = "identity") +
     geom_label(aes(label = protocol$labs), hjust = 1.05, size = 3) +
     labs(x = "Training session", y = "Repetitions") +
@@ -46,5 +80,6 @@ repes %>%
     theme(
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()
-    ) +
-    ggsave("./reports/Figure_1.tiff", device = "tiff")
+    )
+
+ggsave("./reports/Figure_1.png", device = "png")

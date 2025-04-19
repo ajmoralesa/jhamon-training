@@ -14,11 +14,16 @@ import pandas as pd
 import numpy as np
 from scipy import integrate  # Add import for scipy.integrate
 
-pathtodata = Path("/Volumes/jHamON/")
+pathtodata = Path("/Volumes/AJMA/")
 results_output_path = Path.home() / "Desktop" / "_RESULTS_TRAINING"
 
 # NORDIC training sessions
-nordict = check_result_file(pathtodata, results_output_path, res_file="nht_results.pkl")
+nordict = check_result_file(
+    pathtodata,
+    results_output_path,
+    participant_id="jhamon01",
+    res_file="nht_results.pkl",
+)
 nordf = frames.nht_todf(my_dict=nordict)
 
 # IK training sessions
@@ -86,7 +91,6 @@ save_obj(
 
 # Nordic discrete variables
 nor_disc_df = frames.nht_disc_todf(my_dict=nordict)
-
 nor_disc_df["var"].unique()
 
 

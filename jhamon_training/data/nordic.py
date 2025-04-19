@@ -1,31 +1,28 @@
 from numpy.ma import max
 import logging
+from typing import Optional, Union, List
 
 
-def dame_nht_data(training_sessions):
+def dame_nht_data(
+    training_sessions, participant_id: Optional[Union[str, List[str]]] = None
+):
     """
     Import mechanical and motion capture data. Apply calibration (for force data)
     and filter data.
 
     Parameters:
-        session (dict): A dictionary containing information about mechanical and
-                        motion capture data files for a specific session. It should
-                        be structured as follows:
-                        {
-                            'set_1': [['path_to_mech_data_file_1', 'path_to_motion_capture_data_file_1']],
-                            'set_2': [['path_to_mech_data_file_2', 'path_to_motion_capture_data_file_2']],
-                            ...
-                        }
+        training_sessions (dict): A dictionary where keys are participant IDs and
+                                  values are dictionaries mapping training session
+                                  names (e.g., 'tr_1') to data paths.
+        participant_id (Optional[Union[str, List[str]]]): The specific participant ID(s)
+                                                        to process. Can be a single
+                                                        string or a list of strings.
+                                                        If None, process all participants.
+                                                        Defaults to None.
 
     Returns:
-        dict: A dictionary containing all data synchronized and indexes segmenting
-              repetitions for each set in the session. The structure of the
-              returned dictionary is as follows:
-              {
-                  'set_1': [[repetition_indexes], [synchronized_data]],
-                  'set_2': [[repetition_indexes], [synchronized_data]],
-                  ...
-              }
+        dict: A dictionary containing processed data for the specified participant(s).
+              Structure: {participant_id: {session_name: {set_name: [[indexes], [DATA]]}}}
 
     Dependencies:
         This function requires the following modules to be imported:
@@ -62,13 +59,33 @@ def dame_nht_data(training_sessions):
     import fnmatch
 
     from jhamon_training.data import frames
-    from jhamon_training.data.nordic import damedata, arregla_errores, dame_pesocorporal, analizame_curvas
+    from jhamon_training.data.nordic import (
+        damedata,
+        arregla_errores,
+        dame_pesocorporal,
+        analizame_curvas,
+    )
 
     resultados_nordics = dict()
-    for participant in training_sessions.keys():
-        # for participant in ['jhamon04', 'jhamon05', 'jhamon06',
-        #                     'jhamon09', 'jhamon10', 'jhamon11', 'jhamon12',
-        #                     'jhamon14', 'jhamon15', 'jhamon16']:
+
+    # Determine which participants to process based on participant_id
+    if participant_id is None:
+        participants_to_process = list(training_sessions.keys())
+    elif isinstance(participant_id, str):
+        participants_to_process = [participant_id]
+    elif isinstance(participant_id, list):
+        participants_to_process = participant_id
+    else:
+        # Handle potential invalid input type if necessary
+        raise TypeError("participant_id must be None, a string, or a list of strings")
+
+    for participant in participants_to_process:
+        if participant not in training_sessions:
+            logging.warning(
+                f"Participant ID {participant} not found in training_sessions. Skipping."
+            )
+            continue
+
         results_session = dict()
         for tr_session in training_sessions[participant].keys():
             # print(str(participant + '; Sesión de entrenamiento: ') + tr_session)
@@ -76,37 +93,59 @@ def dame_nht_data(training_sessions):
             data_path = training_sessions[participant][tr_session]
             files = os.listdir(data_path)
 
-            mech_files = [x for x in fnmatch.filter(
-                files, "*.txt") if 'readme' not in x]
-            mech_paths = [data_path + "\\" + mech_files[ii]
-                          for ii in range(len(mech_files))]
+            # Filter out hidden files (starting with . or ._)
+            visible_files = [f for f in files if not f.startswith(".")]
 
-            kin_files = fnmatch.filter(files, '*Take *' and '*.csv')
-            kin_paths = [data_path + "\\" + kin_files[ii]
-                         for ii in range(len(kin_files))]
+            # Get mechanical data files (exclude hidden and readme files)
+            mech_files = [
+                x for x in fnmatch.filter(visible_files, "*.txt") if "readme" not in x
+            ]
+            mech_paths = [data_path / mech_files[ii] for ii in range(len(mech_files))]
+
+            # Get kinematic data files (using only visible files)
+            kin_files = fnmatch.filter(visible_files, "*Take *" and "*.csv")
+            kin_paths = [data_path / kin_files[ii] for ii in range(len(kin_files))]
+
+            # Ensure we only pair files if counts match or take the minimum
+            num_mech = len(mech_paths)
+            num_kin = len(kin_paths)
+            num_pairs = min(num_mech, num_kin)
+
+            if num_mech != num_kin:
+                logging.warning(
+                    f"Mismatch in file counts for {participant} / {tr_session}: "
+                    f"{num_mech} mechanical files vs {num_kin} kinematic files. "
+                    f"Processing {num_pairs} pairs."
+                )
 
             # Create dict with session{'set_n': [ [mech], [optitrack] ]}
             session = dict()
-            for ii in range(len(mech_paths)):
-                session[str('set_' + str(ii+1))
-                        ] = [[mech_paths[ii], kin_paths[ii]]]
+            for ii in range(num_pairs):  # Loop only up to the minimum number of pairs
+                set_name = f"set_{ii + 1}"
+                session[set_name] = [[mech_paths[ii], kin_paths[ii]]]
+
+            # Skip processing if no pairs were found
+            if not session:
+                logging.warning(
+                    f"No valid mech/kin pairs found for {participant} / {tr_session}. Skipping session analysis."
+                )
+                continue
 
             # Get data and indexes for each set of the current session
             session_data = damedata(session)
 
             # Evaluate known exceptions
-            session_data = arregla_errores(
-                session_data, participant, tr_session)
+            session_data = arregla_errores(session_data, participant, tr_session)
 
             # get body weight
             pesocorporal = dame_pesocorporal(
-                participant, datapath=os.path.split(data_path)[0])
+                participant, datapath=os.path.split(data_path)[0]
+            )
 
             # Get results
-            results_session[tr_session] = analizame_curvas(session_data,
-                                                           pesocorporal,
-                                                           participant,
-                                                           tr_session)
+            results_session[tr_session] = analizame_curvas(
+                session_data, pesocorporal, participant, tr_session
+            )
 
             resultados_nordics[participant] = results_session
 
@@ -137,32 +176,39 @@ def damedata(session):
 
     session_data = dict()
     for jj in range(len(session)):
-        serie = 'set_' + str(jj + 1)
+        serie = "set_" + str(jj + 1)
 
-        print('Toma data de la serie: ' + serie)
+        print("Toma data de la serie: " + serie)
 
         # Function to convert ',' to '.' in the text file
         def conv(x):
-            return x.replace(',', '.').encode()
-        mech_raw = np.genfromtxt((conv(x) for x in open(
-            session[serie][0][0])), delimiter=';', skip_header=2)
+            return x.replace(",", ".").encode()
+
+        mech_raw = np.genfromtxt(
+            (conv(x) for x in open(session[serie][0][0], encoding="latin-1")),
+            delimiter=";",
+            skip_header=2,
+        )
 
         # From volts to newtons
-        mech_raw[:, 1] = ((mech_raw[:, 1])*-1 -
-                          0.10632009202953419) / 0.005860458908676682
-        mech_raw[:, 2] = ((mech_raw[:, 2])*-1 -
-                          0.0476401060416749) / 0.006073002639830023
+        mech_raw[:, 1] = (
+            (mech_raw[:, 1]) * -1 - 0.10632009202953419
+        ) / 0.005860458908676682
+        mech_raw[:, 2] = (
+            (mech_raw[:, 2]) * -1 - 0.0476401060416749
+        ) / 0.006073002639830023
 
         # Use trigger chanel to cut mechanical data
         trigger_threshold = 1
 
         # get trigger indexes
         idx = np.argwhere(mech_raw[:, 3] > trigger_threshold)
-        mech_data = mech_raw[idx[0, 0]:idx[-1, 0], [0, 1, 2]]
+        mech_data = mech_raw[idx[0, 0] : idx[-1, 0], [0, 1, 2]]
 
         # Get motion capture data
-        mo_data = np.genfromtxt(session[serie][0][1], usecols=np.arange(
-            20), skip_header=7, delimiter=',')
+        mo_data = np.genfromtxt(
+            session[serie][0][1], usecols=np.arange(20), skip_header=7, delimiter=","
+        )
 
         # array with only x,y,z axes for each marker in CM
         markers = np.asarray(mo_data[:, 2:])
@@ -175,25 +221,41 @@ def damedata(session):
 
         # Low pass filter marker trajectories
         from scipy.signal import butter, filtfilt
+
         freq = 100
         C = 0.802
         cut_hz = 6
-        b, a = butter(2, (cut_hz / (freq / 2) / C), btype='low')
-        markers_filt = np.transpose(np.asarray(
-            [filtfilt(b, a, markers_filled[:, jj]) for jj in range(markers_filled.shape[1])]))
+        b, a = butter(2, (cut_hz / (freq / 2) / C), btype="low")
+        markers_filt = np.transpose(
+            np.asarray(
+                [
+                    filtfilt(b, a, markers_filled[:, jj])
+                    for jj in range(markers_filled.shape[1])
+                ]
+            )
+        )
 
         # Downsample force data to markers
-        mech_resampled = np.asarray(signal.resample(
-            mech_data[:, 1:], len(markers_filt)))
-        time = np.transpose(np.linspace(
-            0, len(mech_resampled) / 100, num=len(mech_resampled)))
+        mech_resampled = np.asarray(
+            signal.resample(mech_data[:, 1:], len(markers_filt))
+        )
+        time = np.transpose(
+            np.linspace(0, len(mech_resampled) / 100, num=len(mech_resampled))
+        )
         DATA = np.column_stack((time, mech_resampled, markers_filt))
 
         # Segmentate repetitions
         from jhamon.signal.mech import _detect_onset
+
         force_threshold = DATA[:, 2].max() * 0.4
-        dins = _detect_onset(DATA[:, 2], threshold=force_threshold,
-                             n_above=100, n_below=0, threshold2=1, show=False)
+        dins = _detect_onset(
+            DATA[:, 2],
+            threshold=force_threshold,
+            n_above=100,
+            n_below=0,
+            threshold2=1,
+            show=False,
+        )
         # thresholds not precise
         indexes = np.array([dins[:, 0] - 350, dins[:, 1] + 300])
 
@@ -209,7 +271,7 @@ def damedata(session):
 
         session_data[serie] = [[indexes], [DATA]]
 
-    return(session_data)
+    return session_data
 
 
 def _llenahuecos(time, y):
@@ -256,7 +318,8 @@ def _llenahuecos(time, y):
 
     # Create interpolation function without the
     f_interp = scipy.interpolate.interp1d(
-        time[idx], y[idx], fill_value='extrapolate', kind='linear')
+        time[idx], y[idx], fill_value="extrapolate", kind="linear"
+    )
     ynew = f_interp(time)
 
     return ynew
@@ -268,56 +331,55 @@ def arregla_errores(session_data, participant, tr_session):
     """
 
     ###########################################################################
-    if participant in ['jhamon05'] and tr_session in ['tr_1']:
-        session_data['set_1'][0][0][0][0] = 100
-        session_data['set_3'][0][0][0][0] = 100
+    if participant in ["jhamon05"] and tr_session in ["tr_1"]:
+        session_data["set_1"][0][0][0][0] = 100
+        session_data["set_3"][0][0][0][0] = 100
 
-    if participant in ['jhamon16'] and tr_session in ['tr_1']:
-        session_data['set_1'][0][0][0][3] = 5150
-        session_data['set_1'][0][0][0][4] = 6320
+    if participant in ["jhamon16"] and tr_session in ["tr_1"]:
+        session_data["set_1"][0][0][0][3] = 5150
+        session_data["set_1"][0][0][0][4] = 6320
 
     ###########################################################################
 
-    if participant in ['jhamon06'] and tr_session in ['tr_3']:
-        session_data['set_1'][0][0][0][0] = 100
-        session_data['set_4'][0][0][0][0] = 100
+    if participant in ["jhamon06"] and tr_session in ["tr_3"]:
+        session_data["set_1"][0][0][0][0] = 100
+        session_data["set_4"][0][0][0][0] = 100
 
     # Exclude repetitions 4 and 5 5 where markers are not available
-    if participant in ['jhamon09'] and tr_session in ['tr_3']:
-        session_data['set_4'][0][0] = session_data['set_4'][0][0][:, (0, 1, 2)]
+    if participant in ["jhamon09"] and tr_session in ["tr_3"]:
+        session_data["set_4"][0][0] = session_data["set_4"][0][0][:, (0, 1, 2)]
 
     ###########################################################################
 
-    if participant in ['jhamon14'] and tr_session in ['tr_4']:
-        session_data['set_1'][0][0][0][2] = 2730
+    if participant in ["jhamon14"] and tr_session in ["tr_4"]:
+        session_data["set_1"][0][0][0][2] = 2730
 
     ###########################################################################
 
-    if participant in ['jhamon06'] and tr_session in ['tr_5']:
-        session_data['set_3'][0][0][0][4] = 6600
-        session_data['set_4'][0][0][0][4] = 6500
+    if participant in ["jhamon06"] and tr_session in ["tr_5"]:
+        session_data["set_3"][0][0][0][4] = 6600
+        session_data["set_4"][0][0][0][4] = 6500
 
     # Exclude repetition 5 where markers are not available
-    if participant in ['jhamon15'] and tr_session in ['tr_5']:
-        session_data['set_4'][0][0] = session_data['set_4'][0][0][:,
-                                                                  (0, 1, 2, 3, 5)]
+    if participant in ["jhamon15"] and tr_session in ["tr_5"]:
+        session_data["set_4"][0][0] = session_data["set_4"][0][0][:, (0, 1, 2, 3, 5)]
 
     ###########################################################################
 
-    if participant in ['jhamon04'] and tr_session in ['tr_6']:
-        session_data['set_1'][0][0] = session_data['set_1'][0][0][:, 1:]
+    if participant in ["jhamon04"] and tr_session in ["tr_6"]:
+        session_data["set_1"][0][0] = session_data["set_1"][0][0][:, 1:]
 
     ###########################################################################
-    if participant in ['jhamon04'] and tr_session in ['tr_7']:
-        session_data['set_2'][0][0] = session_data['set_1'][0][0][:,
-                                                                  (0, 2, 3, 4, 5)]
+    if participant in ["jhamon04"] and tr_session in ["tr_7"]:
+        session_data["set_2"][0][0] = session_data["set_1"][0][0][:, (0, 2, 3, 4, 5)]
 
     ###########################################################################
-    if participant in ['jhamon03'] and tr_session in ['tr_15']:
-        session_data['set_5'][0][0] = session_data['set_5'][0][0][:,
-                                                                  (0, 1, 2, 3, 5, 6, 7)]
+    if participant in ["jhamon03"] and tr_session in ["tr_15"]:
+        session_data["set_5"][0][0] = session_data["set_5"][0][0][
+            :, (0, 1, 2, 3, 5, 6, 7)
+        ]
 
-    return(session_data)
+    return session_data
 
 
 def dame_pesocorporal(participant, datapath):
@@ -337,24 +399,31 @@ def dame_pesocorporal(participant, datapath):
 
     from pathlib import Path
     import pandas as pd
-    # Create dictionary with all paths to training sessions
-    path_antro = str(Path(datapath)) + '\\' + str('antro.xlsx')
+
+    # Create path to antro.xlsx using pathlib for cross-platform compatibility
+    path_antro = Path(datapath) / "antro.xlsx"
     peso = pd.read_excel(path_antro).iloc[0, 1]
 
-    return(peso)
+    return peso
 
 
 def analizame_curvas(session_data, pesocorporal, participant, tr_session):
 
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
-                        handlers=[logging.FileHandler("logfile.log"), logging.StreamHandler()])
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("logfile.log"), logging.StreamHandler()],
+    )
 
     import numpy as np
     import pandas as pd
     from jhamon.signal.nordic import dame_inercia
     from jhamon.signal.filters import butter_low_filter
     from jhamon.signal.mech import _detect_onset
-    from jhamon_training.kinematics import calculate_knee_velocity, calculate_hip_velocity
+    from jhamon_training.kinematics import (
+        calculate_knee_velocity,
+        calculate_hip_velocity,
+    )
     from jhamon_training.utils import linear_tnorm
 
     results_session = dict()
@@ -364,42 +433,42 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
 
         results = dict()
         for repetition in range(indexes.shape[1]):
-            rep_num = 'rep_' + str(repetition + 1)
-            print(participant + ' ' + tr_session + ' ' + serie + ' ' + rep_num)
-            repe = DATA[indexes[0, repetition]:indexes[1, repetition], :]
+            rep_num = "rep_" + str(repetition + 1)
+            print(participant + " " + tr_session + " " + serie + " " + rep_num)
+            repe = DATA[indexes[0, repetition] : indexes[1, repetition], :]
 
             # Create empty dictionary with all variables of interest
             vdict = {
-                'REP_time': 0,
-                'hip_ROM': 0,
-                'hip_v_mean': 0,
-                'hip_v_peak': 0,
-                'knee_ROM': 0,
-                'knee_v_mean': 0,
-                'knee_v_peak': 0,
-                'knee_angDWA': 0,
-                'knee_ROMDWA': 0,
-                'knee_fpeak': 0,
-                'knee_ROMfpeak': 0,
-                'knee_tor_mean': 0,
-                'knee_tor_peak': 0,
-                'knee_impulse': 0,
-                'knee_work': 0
+                "REP_time": 0,
+                "hip_ROM": 0,
+                "hip_v_mean": 0,
+                "hip_v_peak": 0,
+                "knee_ROM": 0,
+                "knee_v_mean": 0,
+                "knee_v_peak": 0,
+                "knee_angDWA": 0,
+                "knee_ROMDWA": 0,
+                "knee_fpeak": 0,
+                "knee_ROMfpeak": 0,
+                "knee_tor_mean": 0,
+                "knee_tor_peak": 0,
+                "knee_impulse": 0,
+                "knee_work": 0,
             }
 
             normcurves = {
-                'force': [],
-                'torque': [],
-                'knee_ROM': [],
-                'hip_ROM': [],
-                'knee_v': [],
-                'hip_v': [],
-                'knee_work': []
+                "force": [],
+                "torque": [],
+                "knee_ROM": [],
+                "hip_ROM": [],
+                "knee_v": [],
+                "hip_v": [],
+                "knee_work": [],
             }
 
             try:
                 # Correct manually some different setup exceptions
-                if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
+                if participant in ["jhamon06"] and tr_session in ["tr_1", "tr_2"]:
                     marker1 = np.array(repe[:, [4, 3]])
                     marker2 = np.array(repe[:, [7, 6]])
                     marker3 = np.array(repe[:, [10, 9]])
@@ -407,7 +476,7 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                     marker5 = np.array(repe[:, [16, 15]])
                     marker6 = np.array(repe[:, [19, 18]])
 
-                if participant in ['jhamon10'] and tr_session in ['tr_1']:
+                if participant in ["jhamon10"] and tr_session in ["tr_1"]:
                     marker1 = np.array(repe[:, [4, 3]])
                     marker2 = np.array(repe[:, [7, 6]])
                     marker3 = np.array(repe[:, [10, 9]])
@@ -424,39 +493,56 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                     marker6 = np.array(repe[:, [19, 20]])
 
                 knee_rad, knee_v_rad, knee_acc = calculate_knee_velocity(
-                    marker3, marker4, marker5, marker6, freq=100)
+                    marker3, marker4, marker5, marker6, freq=100
+                )
 
                 hip_rad, hip_v_rad, hip_acc = calculate_hip_velocity(
-                    marker1, marker2, marker3, marker4, freq=100)
+                    marker1, marker2, marker3, marker4, freq=100
+                )
 
                 # All data rep
-                D = np.column_stack((repe[:-2, :3], knee_rad[:-2], hip_rad[:-2],
-                                    knee_v_rad[:-1], hip_v_rad[:-1],
-                                    knee_acc, hip_acc,
-                                    marker1[:-2], marker2[:-2], marker3[:-2],
-                                    marker4[:-2], marker5[:-2], marker6[:-2]))
+                D = np.column_stack(
+                    (
+                        repe[:-2, :3],
+                        knee_rad[:-2],
+                        hip_rad[:-2],
+                        knee_v_rad[:-1],
+                        hip_v_rad[:-1],
+                        knee_acc,
+                        hip_acc,
+                        marker1[:-2],
+                        marker2[:-2],
+                        marker3[:-2],
+                        marker4[:-2],
+                        marker5[:-2],
+                        marker6[:-2],
+                    )
+                )
 
-                D[:, 0] = np.transpose(
-                    np.linspace(0, len(D) / 100, num=len(D)))
+                D[:, 0] = np.transpose(np.linspace(0, len(D) / 100, num=len(D)))
 
                 # Flipped calibrations
-                if participant in ['jhamon06'] and tr_session in ['tr_1', 'tr_2']:
+                if participant in ["jhamon06"] and tr_session in ["tr_1", "tr_2"]:
                     D[:, 5] = D[:, 5] * -1
 
-                if participant in ['jhamon10'] and tr_session in ['tr_1']:
+                if participant in ["jhamon10"] and tr_session in ["tr_1"]:
                     D[:, 5] = D[:, 5] * -1
 
                 # Find start of repetition from torque (filtered)
                 force = D[:, 2]  # torque
 
                 # Filter
-                force_filt = butter_low_filter(
-                    force, fs=100, cut_hz=3, order=2)
+                force_filt = butter_low_filter(force, fs=100, cut_hz=3, order=2)
 
                 dif_force = np.diff(force_filt)
-                onset_1 = _detect_onset(force_filt, max(
-                    force_filt[:]) * 0.25, n_above=80, n_below=0, show=False)[0, 0]
-                onset_precise = dif_force[:onset_1 + 5] < 0
+                onset_1 = _detect_onset(
+                    force_filt,
+                    max(force_filt[:]) * 0.25,
+                    n_above=80,
+                    n_below=0,
+                    show=False,
+                )[0, 0]
+                onset_precise = dif_force[: onset_1 + 5] < 0
 
                 if np.where(onset_precise)[0].shape[0] == 0:
                     force_onset = 0
@@ -467,8 +553,13 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                     force_onset = np.where(onset_precise)[0][-2]
 
                 # Set a maximum index at which velocity is evaluated
-                force_offset = _detect_onset(force_filt, max(force_filt[:]) * 0.3,
-                                             n_above=80, n_below=0, show=False)[0, 1]
+                force_offset = _detect_onset(
+                    force_filt,
+                    max(force_filt[:]) * 0.3,
+                    n_above=80,
+                    n_below=0,
+                    show=False,
+                )[0, 1]
                 force_offset = force_offset + 25
 
                 # Find the index at which the velocity is minimum
@@ -486,9 +577,10 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                 vmax_idx = D[vmin_idx:force_offset, 5].argmax() + vmin_idx
 
                 # manual fix
-                if participant in ['jhamon09'] and tr_session in ['tr_3']:
-                    vmax_idx = D[force_onset:force_offset +
-                                 250, 5].argmax() + force_onset
+                if participant in ["jhamon09"] and tr_session in ["tr_3"]:
+                    vmax_idx = (
+                        D[force_onset : force_offset + 250, 5].argmax() + force_onset
+                    )
 
                 # Final data of segmented repetitions
                 REP = D[force_onset:vmin_idx, :]
@@ -507,13 +599,17 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                 hip_ROM = np.abs(REP[1, 4] - REP[-1, 4]) * 180 / np.pi
 
                 # Distances between markers for torque calculations
-                x1, y1, x2, y2 = (marker4[0, 0], marker4[0, 1],
-                                  marker6[0, 0], marker6[0, 1])
+                x1, y1, x2, y2 = (
+                    marker4[0, 0],
+                    marker4[0, 1],
+                    marker6[0, 0],
+                    marker6[0, 1],
+                )
 
-                shank_length = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+                shank_length = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
                 lever_arm = shank_length - 0.05
 
-                if participant in ['jhamon12'] and tr_session in ['tr_5']:
+                if participant in ["jhamon12"] and tr_session in ["tr_5"]:
                     lever_arm = 0.32231839872197643
 
                 # Calculate variables of interest and store them
@@ -547,8 +643,7 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                 freq = 100
                 REP_time = len(REP) / freq  # in seconds
                 knee_impulse = knee_tor_mean * REP_time
-                knee_work = np.abs(
-                    np.trapz(REP[:, 2] * lever_arm, REP[:, 3]))  # Jules
+                knee_work = np.abs(np.trapz(REP[:, 2] * lever_arm, REP[:, 3]))  # Jules
 
                 # Torque inertia corrected
                 bm = pesocorporal
@@ -559,29 +654,59 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
                 torque_corrected = np.zeros(len(REP))
                 for ii in range(len(REP)):
                     torque_measured = REP[ii, 2] * lever_arm
-                    torque_corrected[ii] = -torque_measured + \
-                        ((I_knee[ii] * REP[ii, 7]) / 2)
+                    torque_corrected[ii] = -torque_measured + (
+                        (I_knee[ii] * REP[ii, 7]) / 2
+                    )
 
                 normcurves = dict()
-                normcurves = {'force': linear_tnorm(REP[:, 2])[0],
-                              'torque': linear_tnorm(REP[:, 2]*lever_arm)[0],
-                              'knee_ROM': linear_tnorm((np.abs(REP[:, 3]) * 180 / np.pi))[0],
-                              'knee_v': linear_tnorm(np.abs(REP[:, 5] * 180 / np.pi))[0],
-                              #   'hip_ROM': linear_tnorm((REP[:, 4] * 180 / np.pi))[0],
-                              #   'hip_v': linear_tnorm((REP[:, 6] * 180 / np.pi))[0],
-                              'knee_work': linear_tnorm(((REP[:, 2] * lever_arm)*REP[:, 3]))[0]}
+                normcurves = {
+                    "force": linear_tnorm(REP[:, 2])[0],
+                    "torque": linear_tnorm(REP[:, 2] * lever_arm)[0],
+                    "knee_ROM": linear_tnorm((np.abs(REP[:, 3]) * 180 / np.pi))[0],
+                    "knee_v": linear_tnorm(np.abs(REP[:, 5] * 180 / np.pi))[0],
+                    #   'hip_ROM': linear_tnorm((REP[:, 4] * 180 / np.pi))[0],
+                    #   'hip_v': linear_tnorm((REP[:, 6] * 180 / np.pi))[0],
+                    "knee_work": linear_tnorm(((REP[:, 2] * lever_arm) * REP[:, 3]))[0],
+                }
 
                 # save all discrete results in a dict (vdict)
-                vars_nam = ['REP_time', 'hip_ROM', 'hip_v_mean', 'hip_v_peak', 'knee_ROM', 'knee_v_mean',
-                            'knee_v_peak', 'knee_angDWA', 'knee_ROMDWA', 'knee_fpeak',
-                            'knee_ROMfpeak', 'knee_tor_mean', 'knee_tor_peak', 'knee_impulse', 'knee_work']
+                vars_nam = [
+                    "REP_time",
+                    "hip_ROM",
+                    "hip_v_mean",
+                    "hip_v_peak",
+                    "knee_ROM",
+                    "knee_v_mean",
+                    "knee_v_peak",
+                    "knee_angDWA",
+                    "knee_ROMDWA",
+                    "knee_fpeak",
+                    "knee_ROMfpeak",
+                    "knee_tor_mean",
+                    "knee_tor_peak",
+                    "knee_impulse",
+                    "knee_work",
+                ]
 
-                vars_discrete = np.array((REP_time, hip_ROM, hip_v_mean, hip_v_peak,
-                                          knee_ROM, knee_v_mean, knee_v_peak,
-                                          knee_angDWA, knee_ROMDWA,
-                                          knee_fpeak, knee_ROMfpeak,
-                                          knee_tor_mean, knee_tor_peak,
-                                          knee_impulse, knee_work))
+                vars_discrete = np.array(
+                    (
+                        REP_time,
+                        hip_ROM,
+                        hip_v_mean,
+                        hip_v_peak,
+                        knee_ROM,
+                        knee_v_mean,
+                        knee_v_peak,
+                        knee_angDWA,
+                        knee_ROMDWA,
+                        knee_fpeak,
+                        knee_ROMfpeak,
+                        knee_tor_mean,
+                        knee_tor_peak,
+                        knee_impulse,
+                        knee_work,
+                    )
+                )
 
                 vdict = dict(zip(vars_nam, vars_discrete))
 
@@ -603,7 +728,7 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
         resultsdf = pd.DataFrame(results)
         results_session[serie] = resultsdf
 
-    return(results_session)
+    return results_session
 
 
 def make_patch_spines_invisible(ax):
@@ -634,11 +759,9 @@ def plotea_nordic(data, force_onset, vmax_idx, angDWA_idx2):
     # Second, show the right spine.
     par2.spines["right"].set_visible(True)
 
-    p1, = host.plot(data[:, 0], data[:, 2], label="Torque (Nm)")
-    p2, = par1.plot(data[:, 0], data[:, 3] * 180 / np.pi,
-                    "r-", label="Knee angle")
-    p3, = par2.plot(data[:, 0], data[:, 5] * 180 / np.pi,
-                    "g-", label="Knee Velocity")
+    (p1,) = host.plot(data[:, 0], data[:, 2], label="Torque (Nm)")
+    (p2,) = par1.plot(data[:, 0], data[:, 3] * 180 / np.pi, "r-", label="Knee angle")
+    (p3,) = par2.plot(data[:, 0], data[:, 5] * 180 / np.pi, "g-", label="Knee Velocity")
 
     host.set_xlabel("Time (s)")
     host.set_ylabel("Force (N)")
@@ -650,24 +773,38 @@ def plotea_nordic(data, force_onset, vmax_idx, angDWA_idx2):
     par2.yaxis.label.set_color(p3.get_color())
 
     tkw = dict(size=4, width=1.5)
-    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
-    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
-    par2.tick_params(axis='y', colors=p3.get_color(), **tkw)
-    host.tick_params(axis='x', **tkw)
+    host.tick_params(axis="y", colors=p1.get_color(), **tkw)
+    par1.tick_params(axis="y", colors=p2.get_color(), **tkw)
+    par2.tick_params(axis="y", colors=p3.get_color(), **tkw)
+    host.tick_params(axis="x", **tkw)
 
     lines = [p1, p2, p3]
     host.legend(lines, [l.get_label() for l in lines])
 
-    [host.axvline(_x, linewidth=1, color='k', ls='--') for _x in np.array(
-        (data[force_onset, 0], data[vmax_idx, 0],
-         data[angDWA_idx2 + force_onset, 0]))]
+    [
+        host.axvline(_x, linewidth=1, color="k", ls="--")
+        for _x in np.array(
+            (
+                data[force_onset, 0],
+                data[vmax_idx, 0],
+                data[angDWA_idx2 + force_onset, 0],
+            )
+        )
+    ]
 
-    labels = ['force onset', 'peak velocity', 'angDWA']
-    for i, x in enumerate(np.array((data[force_onset, 0], data[vmax_idx, 0],
-                                    data[angDWA_idx2 + force_onset, 0])) + 0.02):
-        host.text(x, 50, labels[i], rotation=90, verticalalignment='center')
+    labels = ["force onset", "peak velocity", "angDWA"]
+    for i, x in enumerate(
+        np.array(
+            (
+                data[force_onset, 0],
+                data[vmax_idx, 0],
+                data[angDWA_idx2 + force_onset, 0],
+            )
+        )
+        + 0.02
+    ):
+        host.text(x, 50, labels[i], rotation=90, verticalalignment="center")
 
-    host.axvspan(data[force_onset, 0], data[vmax_idx, 0],
-                 color='red', alpha=0.1)
+    host.axvspan(data[force_onset, 0], data[vmax_idx, 0], color="red", alpha=0.1)
     host.grid()
     plt.show()
