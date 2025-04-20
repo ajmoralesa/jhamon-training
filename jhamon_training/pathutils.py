@@ -139,7 +139,7 @@ def dame_ik_paths(
         "jhamon29",
         "jhamon30",
         "jhamon31",
-        "32_pierrelouis",
+        "jhamon32",
         "jhamon33",
         "jhamon34",
     ]

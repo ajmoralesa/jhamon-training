@@ -1,6 +1,107 @@
 from numpy.ma import max
 import logging
 from typing import Optional, Union, List
+from joblib import Parallel, delayed  # Import joblib
+import os
+import fnmatch
+
+from jhamon_training.data import frames
+
+
+# Define the worker function to process a single participant
+def _process_participant_nht(participant, participant_sessions):
+    """
+    Processes NHT data for a single participant.
+
+    Args:
+        participant (str): The participant ID.
+        participant_sessions (dict): Dictionary of training sessions for this participant.
+                                     Example: {'tr_1': PosixPath('/path/to/tr_1'), ...}
+
+    Returns:
+        tuple: A tuple containing (participant_id, participant_results_dict)
+               or None if processing fails for this participant.
+               participant_results_dict structure: {session_name: {set_name: [[indexes], [DATA]]}}
+    """
+    results_session = dict()
+    base_data_path = None  # To store the base path for dame_pesocorporal
+
+    for tr_session, data_path in participant_sessions.items():
+        # Store the base path (assuming all sessions share the same parent for antro.xlsx)
+        if base_data_path is None:
+            # Get the parent directory of the session data path
+            try:
+                # Ensure data_path is converted to string if it's a Path object
+                base_data_path = os.path.split(str(data_path))[0]
+            except Exception as e:
+                logging.error(
+                    f"Could not determine base path for {participant} / {tr_session}: {e}"
+                )
+                continue  # Skip session if base path cannot be determined
+
+        try:
+            # print(str(participant + '; Sesión de entrenamiento: ') + tr_session) # Optional: keep for debugging if needed
+            files = os.listdir(data_path)
+            visible_files = [f for f in files if not f.startswith(".")]
+
+            mech_files = [
+                x for x in fnmatch.filter(visible_files, "*.txt") if "readme" not in x
+            ]
+            mech_paths = [data_path / mech_files[ii] for ii in range(len(mech_files))]
+
+            kin_files = fnmatch.filter(visible_files, "*Take *" and "*.csv")
+            kin_paths = [data_path / kin_files[ii] for ii in range(len(kin_files))]
+
+            num_mech = len(mech_paths)
+            num_kin = len(kin_paths)
+            num_pairs = min(num_mech, num_kin)
+
+            if num_mech != num_kin:
+                logging.warning(
+                    f"Mismatch in file counts for {participant} / {tr_session}: "
+                    f"{num_mech} mechanical files vs {num_kin} kinematic files. "
+                    f"Processing {num_pairs} pairs."
+                )
+
+            session = dict()
+            for ii in range(num_pairs):
+                set_name = f"set_{ii + 1}"
+                session[set_name] = [[mech_paths[ii], kin_paths[ii]]]
+
+            if not session:
+                logging.warning(
+                    f"No valid mech/kin pairs found for {participant} / {tr_session}. Skipping session analysis."
+                )
+                continue
+
+            session_data = damedata(session)
+            session_data = arregla_errores(session_data, participant, tr_session)
+
+            # Make sure base_data_path was successfully determined
+            if base_data_path is None:
+                logging.error(
+                    f"Cannot get peso corporal for {participant} / {tr_session} due to missing base path."
+                )
+                continue  # Skip session if we don't have the path for antro.xlsx
+
+            pesocorporal = dame_pesocorporal(participant, datapath=base_data_path)
+
+            results_session[tr_session] = analizame_curvas(
+                session_data, pesocorporal, participant, tr_session
+            )
+        except Exception as e:
+            logging.error(
+                f"Error processing {participant} / {tr_session}: {e}", exc_info=True
+            )  # Log traceback
+            # Optionally continue to next session or return None for participant
+            continue  # Continue to the next session for this participant
+
+    if (
+        not results_session
+    ):  # If no sessions were successfully processed for this participant
+        return None
+
+    return participant, results_session
 
 
 def dame_nht_data(
@@ -8,7 +109,7 @@ def dame_nht_data(
 ):
     """
     Import mechanical and motion capture data. Apply calibration (for force data)
-    and filter data.
+    and filter data. Processes participants in parallel.
 
     Parameters:
         training_sessions (dict): A dictionary where keys are participant IDs and
@@ -25,133 +126,97 @@ def dame_nht_data(
               Structure: {participant_id: {session_name: {set_name: [[indexes], [DATA]]}}}
 
     Dependencies:
-        This function requires the following modules to be imported:
-        - numpy (np)
-        - scipy (signal)
-        - jhamon.signal.filters (butter_low_filter)
-        - jhamon.signal.mech (_detect_onset)
-        - The _llenahuecos function defined below.
-
-    Notes:
-        - This function is designed to process mechanical and motion capture data
-          for a given session. It synchronizes the data and segmentates repetitions
-          based on the mechanical force data.
-        - The mechanical data should be in a specific format (txt file) and undergo
-          calibration and filtering processes to convert the raw values into
-          corresponding units (e.g., from volts to newtons).
-        - The motion capture data should be in a specific CSV format.
-        - The function internally uses the scipy.signal.butter function to design a
-          low-pass Butterworth filter and jhamon.signal.filters.butter_low_filter to
-          apply the filter to motion capture marker trajectories.
-        - The function uses jhamon.signal.mech._detect_onset to segmentate repetitions
-          based on a force threshold in the mechanical data.
-
-    Example:
-        >>> session_info = {
-                'set_1': [['path_to_mech_data_file_1', 'path_to_motion_capture_data_file_1']],
-                'set_2': [['path_to_mech_data_file_2', 'path_to_motion_capture_data_file_2']]
-            }
-        >>> session_data = damedata(session_info)
-        >>> print(session_data['set_1'])  # Access the processed data for set 1
+        - joblib (for parallel processing)
+        - Requires helper functions: damedata, arregla_errores, dame_pesocorporal, analizame_curvas
+        - numpy, scipy, jhamon modules (as used by helper functions)
+        - os, fnmatch, logging, typing
     """
-
-    import os
-    import fnmatch
-
-    from jhamon_training.data import frames
-    from jhamon_training.data.nordic import (
-        damedata,
-        arregla_errores,
-        dame_pesocorporal,
-        analizame_curvas,
-    )
 
     resultados_nordics = dict()
 
-    # Determine which participants to process based on participant_id
     if participant_id is None:
+        # Ensure all keys in training_sessions are strings if needed, or handle non-string keys
         participants_to_process = list(training_sessions.keys())
     elif isinstance(participant_id, str):
+        # Ensure the participant exists in training_sessions
+        if participant_id not in training_sessions:
+            logging.warning(
+                f"Participant ID {participant_id} not found in training_sessions. Skipping."
+            )
+            return {}  # Return empty dict if the single participant is not found
         participants_to_process = [participant_id]
     elif isinstance(participant_id, list):
-        participants_to_process = participant_id
+        # Filter the list to include only participants present in training_sessions
+        original_count = len(participant_id)
+        participants_to_process = [p for p in participant_id if p in training_sessions]
+        if len(participants_to_process) < original_count:
+            missing_participants = set(participant_id) - set(participants_to_process)
+            logging.warning(
+                f"Participants not found in training_sessions and will be skipped: {missing_participants}"
+            )
+        if not participants_to_process:
+            logging.warning(
+                "None of the specified participants were found in training_sessions."
+            )
+            return {}  # Return empty if no specified participants are found
     else:
-        # Handle potential invalid input type if necessary
         raise TypeError("participant_id must be None, a string, or a list of strings")
 
-    for participant in participants_to_process:
-        if participant not in training_sessions:
-            logging.warning(
-                f"Participant ID {participant} not found in training_sessions. Skipping."
+    if not participants_to_process:
+        logging.warning("No participants selected for processing.")
+        return {}
+
+    # Use joblib to parallelize the loop over participants
+    # n_jobs=-1 uses all available CPU cores. Adjust if needed.
+    # backend="loky" is generally robust. Consider "multiprocessing" if loky causes issues.
+    # Set prefer='processes' for CPU-bound tasks like this.
+    print(f"Processing {len(participants_to_process)} participants in parallel...")
+    try:
+        results_list = Parallel(n_jobs=-1, backend="loky", prefer="processes")(
+            delayed(_process_participant_nht)(
+                participant, training_sessions[participant]
             )
-            continue
-
-        results_session = dict()
-        for tr_session in training_sessions[participant].keys():
-            # print(str(participant + '; Sesión de entrenamiento: ') + tr_session)
-
-            data_path = training_sessions[participant][tr_session]
-            files = os.listdir(data_path)
-
-            # Filter out hidden files (starting with . or ._)
-            visible_files = [f for f in files if not f.startswith(".")]
-
-            # Get mechanical data files (exclude hidden and readme files)
-            mech_files = [
-                x for x in fnmatch.filter(visible_files, "*.txt") if "readme" not in x
-            ]
-            mech_paths = [data_path / mech_files[ii] for ii in range(len(mech_files))]
-
-            # Get kinematic data files (using only visible files)
-            kin_files = fnmatch.filter(visible_files, "*Take *" and "*.csv")
-            kin_paths = [data_path / kin_files[ii] for ii in range(len(kin_files))]
-
-            # Ensure we only pair files if counts match or take the minimum
-            num_mech = len(mech_paths)
-            num_kin = len(kin_paths)
-            num_pairs = min(num_mech, num_kin)
-
-            if num_mech != num_kin:
-                logging.warning(
-                    f"Mismatch in file counts for {participant} / {tr_session}: "
-                    f"{num_mech} mechanical files vs {num_kin} kinematic files. "
-                    f"Processing {num_pairs} pairs."
+            for participant in participants_to_process
+        )
+    except Exception as e:
+        logging.error(f"Parallel processing failed: {e}", exc_info=True)
+        # Optionally, implement a fallback to sequential processing here
+        print("Parallel processing failed. Falling back to sequential processing...")
+        results_list = []
+        for participant in participants_to_process:
+            try:
+                result = _process_participant_nht(
+                    participant, training_sessions[participant]
                 )
-
-            # Create dict with session{'set_n': [ [mech], [optitrack] ]}
-            session = dict()
-            for ii in range(num_pairs):  # Loop only up to the minimum number of pairs
-                set_name = f"set_{ii + 1}"
-                session[set_name] = [[mech_paths[ii], kin_paths[ii]]]
-
-            # Skip processing if no pairs were found
-            if not session:
-                logging.warning(
-                    f"No valid mech/kin pairs found for {participant} / {tr_session}. Skipping session analysis."
+                results_list.append(result)
+            except Exception as inner_e:
+                logging.error(
+                    f"Error processing participant {participant} sequentially: {inner_e}",
+                    exc_info=True,
                 )
-                continue
+                results_list.append(
+                    None
+                )  # Add None if sequential processing for one participant fails
 
-            # Get data and indexes for each set of the current session
-            session_data = damedata(session)
-
-            # Evaluate known exceptions
-            session_data = arregla_errores(session_data, participant, tr_session)
-
-            # get body weight
-            pesocorporal = dame_pesocorporal(
-                participant, datapath=os.path.split(data_path)[0]
-            )
-
-            # Get results
-            results_session[tr_session] = analizame_curvas(
-                session_data, pesocorporal, participant, tr_session
-            )
-
-            resultados_nordics[participant] = results_session
+    # Combine results from the parallel (or sequential fallback) processes
+    for result in results_list:
+        if result:  # Check if the result is not None (i.e., processing was successful)
+            p_id, p_data = result
+            if p_data:  # Ensure participant data is not empty
+                resultados_nordics[p_id] = p_data
+            else:
+                logging.warning(f"No data processed for participant {p_id}, skipping.")
 
     # Remove empty repetitions or sessions
-    resultados_nordics = frames.remove_empty(resultados_nordics)
+    if resultados_nordics:  # Only run if there are results
+        try:
+            # Make sure frames.remove_empty handles the structure correctly
+            resultados_nordics = frames.remove_empty(resultados_nordics)
+        except Exception as e:
+            logging.error(f"Error during frames.remove_empty: {e}", exc_info=True)
+            # Decide how to proceed: return potentially unclean data or raise error
 
+    print("Finished processing participants.")
     return resultados_nordics
 
 

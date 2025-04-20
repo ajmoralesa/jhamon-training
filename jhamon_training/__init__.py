@@ -27,7 +27,7 @@ def check_result_file(
     from jhamon_training.saveload import save_obj
     from pathlib import Path
 
-    results_path = Path(results_dir) / "_RESULTS_TRAINING"
+    results_path = Path(results_dir)
     results_path.mkdir(parents=True, exist_ok=True)  # Ensure results dir exists
     result_file_path = results_path / res_file
 

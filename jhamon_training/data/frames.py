@@ -3,26 +3,33 @@ def ikt_todf(my_dict):
     import pandas as pd
 
     # From dict to df
-    datadf = pd.DataFrame.from_dict({(p, n, s, r, v): my_dict[p][n][s][r][v]
-                                     for p in my_dict.keys()
-                                     for n in my_dict[p].keys()
-                                     for s in my_dict[p][n].keys()
-                                     for r in my_dict[p][n][s].keys()
-                                     for v in my_dict[p][n][s][r].keys()}).stack(level=[0, 1, 2, 3, 4]).to_frame()
+    datadf = (
+        pd.DataFrame.from_dict(
+            {
+                (p, n, s, r, v): my_dict[p][n][s][r][v]
+                for p in my_dict.keys()
+                for n in my_dict[p].keys()
+                for s in my_dict[p][n].keys()
+                for r in my_dict[p][n][s].keys()
+                for v in my_dict[p][n][s][r].keys()
+            }
+        )
+        .stack(level=[0, 1, 2, 3, 4])
+        .to_frame()
+    )
 
     datadf.reset_index(inplace=True)
-    datadf.columns = ['timepoint', 'par',
-                      'trses', 'set', 'rep', 'var', 'value']
+    datadf.columns = ["timepoint", "par", "trses", "set", "rep", "var", "value"]
 
     # create 'tr_group' variable
     NH, IK, CO = alocate_training_group()
-    datadf.loc[datadf['par'].isin(NH), 'tr_group'] = 'NH'
-    datadf.loc[datadf['par'].isin(IK), 'tr_group'] = 'IK'
-    datadf.loc[datadf['par'].isin(CO), 'tr_group'] = 'CO'
+    datadf.loc[datadf["par"].isin(NH), "tr_group"] = "NH"
+    datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
+    datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
     # add column 'all_labels'
-    colu = ['par', 'trses', 'set', 'rep', 'var', 'tr_group']
-    datadf['all_labels'] = datadf[colu].apply(lambda x: ' '.join(x), axis=1)
+    colu = ["par", "trses", "set", "rep", "var", "tr_group"]
+    datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
     datadf.reset_index(inplace=True)
 
     return datadf
@@ -33,25 +40,32 @@ def nht_todf(my_dict):
     import pandas as pd
 
     # from dict to df
-    datadf = pd.DataFrame.from_dict({(p, n, s, r, v): my_dict[p][n][s][r][1][v]
-                                     for p in my_dict.keys()
-                                     for n in my_dict[p].keys()
-                                     for s in my_dict[p][n].keys()
-                                     for r in my_dict[p][n][s].keys()
-                                     for v in my_dict[p][n][s][r][1].keys()}).stack(level=[0, 1, 2, 3, 4]).to_frame()
+    datadf = (
+        pd.DataFrame.from_dict(
+            {
+                (p, n, s, r, v): my_dict[p][n][s][r][1][v]
+                for p in my_dict.keys()
+                for n in my_dict[p].keys()
+                for s in my_dict[p][n].keys()
+                for r in my_dict[p][n][s].keys()
+                for v in my_dict[p][n][s][r][1].keys()
+            }
+        )
+        .stack(level=[0, 1, 2, 3, 4])
+        .to_frame()
+    )
 
     datadf.reset_index(inplace=True)
-    datadf.columns = ['timepoint', 'par',
-                      'trses', 'set', 'rep', 'var', 'value']
+    datadf.columns = ["timepoint", "par", "trses", "set", "rep", "var", "value"]
 
     # create 'tr_group' variable
     NH, IK, CO = alocate_training_group()
-    datadf.loc[datadf['par'].isin(NH), 'tr_group'] = 'NH'
-    datadf.loc[datadf['par'].isin(IK), 'tr_group'] = 'IK'
-    datadf.loc[datadf['par'].isin(CO), 'tr_group'] = 'CO'
+    datadf.loc[datadf["par"].isin(NH), "tr_group"] = "NH"
+    datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
+    datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
-    colu = ['par', 'trses', 'set', 'rep', 'var', 'tr_group']
-    datadf['all_labels'] = datadf[colu].apply(lambda x: ' '.join(x), axis=1)
+    colu = ["par", "trses", "set", "rep", "var", "tr_group"]
+    datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
     datadf.reset_index(inplace=True)
 
     return datadf
@@ -64,14 +78,53 @@ def alocate_training_group():
         list -- Three list objects of participant names
     """
 
-    NH = ['jhamon01', 'jhamon02', 'jhamon03', 'jhamon04', 'jhamon05', 'jhamon06',
-          'jhamon09', 'jhamon10', 'jhamon11', 'jhamon12', 'jhamon14', 'jhamon15', 'jhamon16']
+    NH = [
+        "jhamon01",
+        "jhamon02",
+        "jhamon03",
+        "jhamon04",
+        "jhamon05",
+        "jhamon06",
+        "jhamon09",
+        "jhamon10",
+        "jhamon11",
+        "jhamon12",
+        "jhamon14",
+        "jhamon15",
+        "jhamon16",
+    ]
 
-    IK = ['jhamon18', 'jhamon20', 'jhamon22', 'jhamon23', 'jhamon24', 'jhamon25', 'jhamon26',
-          'jhamon28', 'jhamon29', 'jhamon30', 'jhamon31', 'jhamon32', 'jhamon33', 'jhamon34']
+    IK = [
+        "jhamon18",
+        "jhamon20",
+        "jhamon22",
+        "jhamon23",
+        "jhamon24",
+        "jhamon25",
+        "jhamon26",
+        "jhamon28",
+        "jhamon29",
+        "jhamon30",
+        "jhamon31",
+        "jhamon32",
+        "jhamon33",
+        "jhamon34",
+    ]
 
-    CO = ['jhamon07', 'jhamon08', 'jhamon17', 'jhamon19', 'jhamon21', 'jhamon27', 'jhamon35',
-          'jhamon36', 'jhamon37', 'jhamon38', 'jhamon40', 'jhamon42']
+    CO = [
+        "jhamon07",
+        "jhamon08",
+        "jhamon17",
+        "jhamon19",
+        "jhamon21",
+        "jhamon27",
+        "jhamon35",
+        "jhamon36",
+        "jhamon37",
+        "jhamon38",
+        "jhamon40",
+        "jhamon42",
+    ]
 
     return NH, IK, CO
 
@@ -172,25 +225,33 @@ def nht_disc_todf(my_dict):
 
     import pandas as pd
 
-    datadf = pd.DataFrame({(p, n, s, r, v): my_dict[p][n][s][r][0][v]
-                           for p in my_dict.keys()
-                           for n in my_dict[p].keys()
-                           for s in my_dict[p][n].keys()
-                           for r in my_dict[p][n][s].keys()
-                           for v in my_dict[p][n][s][r][0].keys()}, index=[0]).stack(level=[0, 1, 2, 3, 4]).to_frame()
+    datadf = (
+        pd.DataFrame(
+            {
+                (p, n, s, r, v): my_dict[p][n][s][r][0][v]
+                for p in my_dict.keys()
+                for n in my_dict[p].keys()
+                for s in my_dict[p][n].keys()
+                for r in my_dict[p][n][s].keys()
+                for v in my_dict[p][n][s][r][0].keys()
+            },
+            index=[0],
+        )
+        .stack(level=[0, 1, 2, 3, 4])
+        .to_frame()
+    )
 
     datadf.reset_index(inplace=True)
-    datadf.columns = ['timepoint', 'par',
-                      'trses', 'set', 'rep', 'var', 'value']
+    datadf.columns = ["timepoint", "par", "trses", "set", "rep", "var", "value"]
 
     # create 'tr_group' variable
     NH, IK, CO = alocate_training_group()
-    datadf.loc[datadf['par'].isin(NH), 'tr_group'] = 'NH'
-    datadf.loc[datadf['par'].isin(IK), 'tr_group'] = 'IK'
-    datadf.loc[datadf['par'].isin(CO), 'tr_group'] = 'CO'
+    datadf.loc[datadf["par"].isin(NH), "tr_group"] = "NH"
+    datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
+    datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
-    colu = ['par', 'trses', 'set', 'rep', 'var', 'tr_group']
-    datadf['all_labels'] = datadf[colu].apply(lambda x: ' '.join(x), axis=1)
+    colu = ["par", "trses", "set", "rep", "var", "tr_group"]
+    datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
     datadf.reset_index(inplace=True)
 
     return datadf
