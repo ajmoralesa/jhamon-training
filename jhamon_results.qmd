@@ -23,6 +23,10 @@ with open(stats_path) as f:
 
 Mechanical work around the knee joint per repetition was `{python} stats["nh_work_mean"]` ± `{python} stats["nh_work_sd"]` J in the NH group and `{python} stats["ik_work_mean"]` ± `{python} stats["ik_work_sd"]` J in the IK group. On average, participants in the IK group performed `{python} stats["rep_diff"]` ± `{python} stats["rep_diff_sd"]` repetitions `{python} stats["rep_diff_sign"]` than the NH group per set, ranging from `{python} stats["tr1_avg_diff"]` ± `{python} stats["tr1_avg_diff_sd"]` repetitions in the first training session to `{python} stats["tr15_avg_diff"]` ± `{python} stats["tr15_avg_diff_sd"]` repetitions at the fifteenth training session. The total amount of work per set was similar between the two groups (Figure 2).
 
+Knee angular velocity was XX ± XX rad/s in the NH group and XX ± XX rad/s in the IK group. No significant changes were observed in knee angular velocity between the NH and IK groups and thorughtout the training sessions (Figure XX). 
+
+
+
 
 
 
