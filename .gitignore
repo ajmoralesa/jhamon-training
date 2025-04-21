@@ -104,3 +104,21 @@ ENV/
 
 # VScode
 .vscode
+
+# Quarto
+/.quarto/
+/_site/
+/_freeze/
+/_extensions/
+*.pdf
+*.docx
+*.odt
+*.tex
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*_files/
+*_cache/

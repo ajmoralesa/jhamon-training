@@ -14,7 +14,7 @@ def ikt_todf(my_dict):
                 for v in my_dict[p][n][s][r].keys()
             }
         )
-        .stack(level=[0, 1, 2, 3, 4])
+        .stack(level=[0, 1, 2, 3, 4], future_stack=True)
         .to_frame()
     )
 
@@ -51,7 +51,7 @@ def nht_todf(my_dict):
                 for v in my_dict[p][n][s][r][1].keys()
             }
         )
-        .stack(level=[0, 1, 2, 3, 4])
+        .stack(level=[0, 1, 2, 3, 4], future_stack=True)
         .to_frame()
     )
 
@@ -237,7 +237,7 @@ def nht_disc_todf(my_dict):
             },
             index=[0],
         )
-        .stack(level=[0, 1, 2, 3, 4])
+        .stack(level=[0, 1, 2, 3, 4], future_stack=True)
         .to_frame()
     )
 
@@ -250,11 +250,41 @@ def nht_disc_todf(my_dict):
     datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
     datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
-    colu = ["par", "trses", "set", "rep", "var", "tr_group"]
-    datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
-    datadf.reset_index(inplace=True)
+    # select only: work, mean_torque, peak_torque, angle_at_peak_torque
+    datadf = datadf[
+        datadf["var"].isin(
+            ["knee_work", "knee_tor_mean", "knee_tor_peak", "knee_fpeak", "knee_v"]
+        )
+    ]
 
-    return datadf
+    # Group by par, trses, set, rep, var and calculate the mean for each group
+    datadf = (
+        datadf.groupby(["par", "trses", "set", "rep", "var"])["value"]
+        .mean()
+        .reset_index()
+    )
+
+    # reshape to wide format
+    wide_df = datadf.pivot(
+        index=["par", "trses", "set", "rep"], columns="var", values="value"
+    ).reset_index()
+
+    # rename columns to match ik_discrete_df columns
+    wide_df = wide_df.rename(
+        columns={
+            "knee_work": "work",
+            "knee_tor_mean": "mean_torque",
+            "knee_tor_peak": "peak_torque",
+            "knee_fpeak": "angle_at_peak_torque",
+            "knee_v": "knee_v",
+        }
+    )
+
+    # Add tr_group column to identify Nordic data
+    wide_df["tr_group"] = "NH"
+
+    # Ensure we're returning the properly reshaped wide dataframe
+    return wide_df
 
 
 # # Remove extra sets from the training data frame
