@@ -27,6 +27,10 @@ def ikt_todf(my_dict):
     datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
     datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
+    # Convert IK knee angle data to match NH convention (90° to 0°)
+    ik_rom_mask = (datadf["tr_group"] == "IK") & (datadf["var"] == "knee_ROM")
+    datadf.loc[ik_rom_mask, "value"] = 90 - abs(datadf.loc[ik_rom_mask, "value"])
+
     # add column 'all_labels'
     colu = ["par", "trses", "set", "rep", "var", "tr_group"]
     datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
@@ -63,6 +67,10 @@ def nht_todf(my_dict):
     datadf.loc[datadf["par"].isin(NH), "tr_group"] = "NH"
     datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
     datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
+
+    # Convert IK knee angle data to match NH convention (90° to 0°)
+    ik_rom_mask = (datadf["tr_group"] == "IK") & (datadf["var"] == "knee_ROM")
+    datadf.loc[ik_rom_mask, "value"] = 90 - abs(datadf.loc[ik_rom_mask, "value"])
 
     colu = ["par", "trses", "set", "rep", "var", "tr_group"]
     datadf["all_labels"] = datadf[colu].apply(lambda x: " ".join(x), axis=1)
@@ -250,10 +258,21 @@ def nht_disc_todf(my_dict):
     datadf.loc[datadf["par"].isin(IK), "tr_group"] = "IK"
     datadf.loc[datadf["par"].isin(CO), "tr_group"] = "CO"
 
-    # select only: work, mean_torque, peak_torque, angle_at_peak_torque
+    # Convert IK knee angle data to positive values to match NH convention
+    ik_rom_mask = (datadf["tr_group"] == "IK") & (datadf["var"] == "knee_ROM")
+    datadf.loc[ik_rom_mask, "value"] = -1 * datadf.loc[ik_rom_mask, "value"]
+
+    # select only: work, mean_torque, peak_torque, angle_at_peak_torque and knee_ROM
     datadf = datadf[
         datadf["var"].isin(
-            ["knee_work", "knee_tor_mean", "knee_tor_peak", "knee_fpeak", "knee_v"]
+            [
+                "knee_work",
+                "knee_tor_mean",
+                "knee_tor_peak",
+                "knee_fpeak",
+                "knee_v_mean",
+                "knee_ROM",
+            ]
         )
     ]
 
@@ -276,7 +295,8 @@ def nht_disc_todf(my_dict):
             "knee_tor_mean": "mean_torque",
             "knee_tor_peak": "peak_torque",
             "knee_fpeak": "angle_at_peak_torque",
-            "knee_v": "knee_v",
+            "knee_v_mean": "knee_v_mean",
+            "knee_ROM": "knee_ROM",
         }
     )
 
@@ -285,13 +305,3 @@ def nht_disc_todf(my_dict):
 
     # Ensure we're returning the properly reshaped wide dataframe
     return wide_df
-
-
-# # Remove extra sets from the training data frame
-# training_df_clean = training_df[
-#     ~((training_df['trses'] == "tr_1") & (training_df['set'].isin(["set_4", "set_5"])) |
-#       (training_df['trses'] == "tr_5") & (training_df['set'] == "set_5") |
-#       (training_df['trses'] == "tr_4") & (training_df['set'] == "set_5") |
-#       (training_df['trses'] == "tr_10") & (training_df['set'].isin(["set_6", "set_7"])) |
-#       (training_df['trses'] == "tr_15") & (training_df['set'] == "set_7"))
-# ]

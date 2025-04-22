@@ -22,7 +22,6 @@ def analyze_discrete_variables(nordict, ikdf, training_df, results_output_path):
     # Nordic discrete variables
     nor_disc_df = frames.nht_disc_todf(my_dict=nordict)
     print("Nordic dataframe columns:", nor_disc_df.columns.tolist())
-
     # IK discrete variables
     ik_discrete_df = calculate_ik_discrete_variables(ikdf)
     print("IK dataframe columns:", ik_discrete_df.columns.tolist())
@@ -41,8 +40,8 @@ def analyze_discrete_variables(nordict, ikdf, training_df, results_output_path):
     rep_work_sd = training_disc.groupby(["tr_group"])["work"].std()
 
     # calculate average velocity per training group as save to a variable, average across all repetitions
-    rep_vel_mean = training_disc.groupby(["tr_group"])["knee_v"].mean()
-    rep_vel_sd = training_disc.groupby(["tr_group"])["knee_v"].std()
+    rep_vel_mean = training_disc.groupby(["tr_group"])["knee_v_mean"].mean()
+    rep_vel_sd = training_disc.groupby(["tr_group"])["knee_v_mean"].std()
 
     # --- Calculate and Compare Repetitions ---
     reps_dif_df = compare_nh_ik_repetitions(training_df)
@@ -88,6 +87,22 @@ def calculate_and_save_report_stats(training_disc, reps_dif_df, output_path):
     tr15_avg_diff = reps_dif_df[reps_dif_df["trses"] == 15]["reps_diff"].abs().mean()
     tr15_avg_diff_sd = reps_dif_df[reps_dif_df["trses"] == 15]["reps_diff"].abs().std()
 
+    # calculate knee_v mean and sd for each group
+    vel_mean = training_disc.groupby(["tr_group"])["knee_v_mean"].mean()
+    vel_sd = training_disc.groupby(["tr_group"])["knee_v_mean"].std()
+
+    # Calculate repetition statistics
+    nh_reps = len(training_disc[training_disc["tr_group"] == "NH"])
+    ik_reps = len(training_disc[training_disc["tr_group"] == "IK"])
+    nh_participants = len(
+        training_disc[training_disc["tr_group"] == "NH"]["par"].unique()
+    )
+    prescribed_reps_per_participant = 497
+    prescribed_total_nh = prescribed_reps_per_participant * nh_participants
+    nh_percentage = (
+        (nh_reps / prescribed_total_nh) * 100 if prescribed_total_nh > 0 else 0
+    )
+
     # Create stats dictionary with formatted values for reporting
     stats = {
         "nh_work_mean": round(work_mean["NH"], 1),
@@ -101,6 +116,15 @@ def calculate_and_save_report_stats(training_disc, reps_dif_df, output_path):
         "tr15_avg_diff": abs(round(tr15_avg_diff, 1)),
         "tr1_avg_diff_sd": abs(round(tr1_avg_diff_sd, 1)),
         "tr15_avg_diff_sd": abs(round(tr15_avg_diff_sd, 1)),
+        "nh_vel_mean": round(vel_mean["NH"], 1),
+        "nh_vel_sd": round(vel_sd["NH"], 1),
+        "ik_vel_mean": round(vel_mean["IK"], 1),
+        "ik_vel_sd": round(vel_sd["IK"], 1),
+        "nh_reps": nh_reps,
+        "ik_reps": ik_reps,
+        "total_reps": nh_reps + ik_reps,
+        "nh_percentage": round(nh_percentage, 1),
+        "prescribed_total_nh": prescribed_total_nh,
     }
 
     # Save stats to JSON file for use in Quarto reports

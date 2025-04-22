@@ -1,8 +1,47 @@
-def spm_nh_kinetics(df):
+import pandas as pd
+import numpy as np
+import spm1d
 
-    import spm1d
-    import numpy as np
-    import pandas as pd
+
+def select_top_repetitions(df: pd.DataFrame, n_reps: int = 3) -> pd.DataFrame:
+    """
+    Selects the n highest peak torque repetitions per participant and session.
+
+    Args:
+        df: DataFrame containing the training data
+        n_reps: Number of top repetitions to select (default: 3)
+
+    Returns:
+        DataFrame containing only the selected repetitions
+    """
+    # Calculate peak torque for each repetition
+    peak_torques = (
+        df.groupby(["par", "trses", "set", "rep"])["value"].max().reset_index()
+    )
+
+    # Sort by peak torque in descending order and select top n_reps per participant and session
+    top_reps = peak_torques.sort_values(
+        ["par", "trses", "value"], ascending=[True, True, False]
+    )
+    top_reps = top_reps.groupby(["par", "trses"]).head(n_reps)
+
+    # Create a mask to select only the top repetitions from the original dataframe
+    mask = df.apply(
+        lambda x: (x["par"], x["trses"], x["set"], x["rep"])
+        in zip(top_reps["par"], top_reps["trses"], top_reps["set"], top_reps["rep"]),
+        axis=1,
+    )
+
+    return df[mask]
+
+
+def spm_nh_kinetics(df):
+    """
+    Performs SPM analysis on training progression data, using only the top 3 repetitions
+    per participant and session based on peak torque.
+    """
+    # Select top 3 repetitions based on peak torque
+    df = select_top_repetitions(df, n_reps=3)
 
     trses = [
         "tr_2",

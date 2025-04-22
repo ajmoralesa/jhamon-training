@@ -11,7 +11,7 @@ format:
 ---
 
 ```{python}
-#| echo: false
+# | echo: false
 import json
 from pathlib import Path
 
@@ -19,11 +19,38 @@ from pathlib import Path
 stats_path = Path.home() / "Desktop" / "_RESULTS_TRAINING" / "training_stats.json"
 with open(stats_path) as f:
     stats = json.load(f)
+
+# Round specific ANOVA values to 1 decimal point
+stats["anova_peak_torque_group_f"] = round(stats["anova_peak_torque_group_f"], 1)
+stats["anova_knee_ROM_group_f"] = round(stats["anova_knee_ROM_group_f"], 1)
 ```
 
-Mechanical work around the knee joint per repetition was `{python} stats["nh_work_mean"]` ± `{python} stats["nh_work_sd"]` J in the NH group and `{python} stats["ik_work_mean"]` ± `{python} stats["ik_work_sd"]` J in the IK group. On average, participants in the IK group performed `{python} stats["rep_diff"]` ± `{python} stats["rep_diff_sd"]` repetitions `{python} stats["rep_diff_sign"]` than the NH group per set, ranging from `{python} stats["tr1_avg_diff"]` ± `{python} stats["tr1_avg_diff_sd"]` repetitions in the first training session to `{python} stats["tr15_avg_diff"]` ± `{python} stats["tr15_avg_diff_sd"]` repetitions at the fifteenth training session. The total amount of work per set was similar between the two groups (Figure 2).
 
-Knee angular velocity was XX ± XX rad/s in the NH group and XX ± XX rad/s in the IK group. No significant changes were observed in knee angular velocity between the NH and IK groups and thorughtout the training sessions (Figure XX). 
+The total number of repetitions included in analyses was `{python} stats["total_reps"]`, with `{python} stats["nh_reps"]` repetitions from the NH group (`{python} stats["nh_percentage"]`% of the total `{python} stats["prescribed_total_nh"]` prescribed repetitions) and `{python} stats["ik_reps"]` repetitions from the IK group. On average, participants in the IK group performed `{python} stats["rep_diff"]` ± `{python} stats["rep_diff_sd"]` repetitions `{python} stats["rep_diff_sign"]` per set than the NH group. This difference increased from `{python} stats["tr1_avg_diff"]` ± `{python} stats["tr1_avg_diff_sd"]` repetitions in the first training session to `{python} stats["tr15_avg_diff"]` ± `{python} stats["tr15_avg_diff_sd"]` at the fifteenth IK training session (ANOVA results?). Figure 2A depicts the density distribution of the number of repetitions the IK group compard to the NH training program. 
+
+The amount of work per repetition was greater in the NH group compared to the IK group (`{python} stats["nh_work_mean"]` ± `{python} stats["nh_work_sd"]` J vs `{python} stats["ik_work_mean"]` ± `{python} stats["ik_work_sd"]` J). The total amount of work per set was similar between the two groups (Figure 2C).
+
+Participants in the NH group performed the repetitions at a mean knee angular velocity of `{python} stats["nh_vel_mean"]` ± `{python} stats["nh_vel_sd"]` degrees/s, which was significantly higher than the mean knee angular velocity in the IK group (`{python} stats["ik_vel_mean"]` ± `{python} stats["ik_vel_sd"]` degrees/s).
+
+
+Higher peak torque values were observed in the NH group compared to the IK group (`{python} stats["nh_peak_torque"]` ± `{python} stats["nh_peak_torque_sd"]` Nm vs `{python} stats["ik_peak_torque"]` ± `{python} stats["ik_peak_torque_sd"]` Nm; *F* = `{python} stats["anova_peak_torque_group_f"]`, *p* = `{python} stats["anova_peak_torque_group_p"]`). No main effect of training group was observed for mean torque (*F* = `{python} stats["anova_mean_torque_group_f"]`, *p* = `{python} stats["anova_mean_torque_group_p"]`) or knee ROM (*F* = `{python} stats["anova_knee_ROM_group_f"]`, *p* = `{python} stats["anova_knee_ROM_group_p"]`). However, a significant main effect of group was observed for knee angle at peak torque (`{python} stats["anova_angle_at_peak_torque_group_mean"]["NH"]` ± `{python} stats["anova_angle_at_peak_torque_group_sd"]["NH"]`° vs `{python} stats["anova_angle_at_peak_torque_group_mean"]["IK"]` ± `{python} stats["anova_angle_at_peak_torque_group_sd"]["IK"]`°; *F* = `{python} stats["anova_angle_at_peak_torque_group_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_angle_at_peak_torque_group_eta"]`). A significant main effect of time was observed for mean torque (*F* = `{python} stats["anova_mean_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_mean_torque_time_eta"]`), peak torque (*F* = `{python} stats["anova_peak_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_peak_torque_time_eta"]`), knee ROM (*F* = `{python} stats["anova_knee_ROM_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_knee_ROM_time_eta"]`), and angle at peak torque (*F* = `{python} stats["anova_angle_at_peak_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_angle_at_peak_torque_time_eta"]`).
+
+
+
+## Mechanical patterns: NH vs IK
+
+SPM analyses on the normalized torque and velocity patterns are shown in Figure 3. In the beginning of the contraction, greater knee joint torque values were observed in the IK group compared to the NH group (0-37%). Greater torque calues were observed in the NH group in the last half of the movement (supra threshold cluster from 48% to 100%). Different patterns were also observed in the knee velocity data, with greater knee angular velocity values in the IK group during the three first quarters of the movement (0.9-73%, CT = 2.729) and the opposite pattern in the last quarter of the movement, with greater knee angular velocity values in the NH group (Figure 3C and 3D).
+
+## Training progression
+
+
+
+
+
+
+
+
+
 
 
 

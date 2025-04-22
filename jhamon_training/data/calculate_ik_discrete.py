@@ -14,44 +14,10 @@ def calculate_ik_discrete_variables(ikdf: pd.DataFrame) -> pd.DataFrame:
     Returns:
         DataFrame with discrete variables per repetition.
     """
-    if ikdf.empty:
-        print("Warning: Input ikdf DataFrame is empty. Returning empty DataFrame.")
-        return pd.DataFrame(
-            columns=[
-                "par",
-                "trses",
-                "set",
-                "rep",
-                "work",
-                "mean_torque",
-                "peak_torque",
-                "angle_at_peak_torque",
-                "knee_v",
-            ]
-        )
-
     # Filter necessary data
     iktor = ikdf[ikdf["var"] == "torque"].copy()
     ikrom = ikdf[ikdf["var"] == "knee_ROM"].copy()
     ikvel = ikdf[ikdf["var"] == "knee_v"].copy()  # Add knee velocity filter
-
-    if iktor.empty or ikrom.empty:
-        print(
-            "Warning: Missing 'torque' or 'knee_ROM' data in ikdf. Cannot calculate discrete variables."
-        )
-        return pd.DataFrame(
-            columns=[
-                "par",
-                "trses",
-                "set",
-                "rep",
-                "work",
-                "mean_torque",
-                "peak_torque",
-                "angle_at_peak_torque",
-                "knee_v",
-            ]
-        )
 
     # --- Calculate Work ---
     tor_wide = iktor[["timepoint", "all_labels", "value"]].pivot(
@@ -82,13 +48,13 @@ def calculate_ik_discrete_variables(ikdf: pd.DataFrame) -> pd.DataFrame:
     # Group velocity data by repetition
     grouped_velocity = ikvel.groupby(["par", "trses", "set", "rep"])
 
+    # Calculate mean velocity
+    mean_velocity = grouped_velocity["value"].mean().rename("knee_v_mean")
+
     # 1. Mean Torque
     mean_torque = grouped_torque["value"].mean().rename("mean_torque")
 
-    # 2. Mean Knee Velocity
-    mean_velocity = grouped_velocity["value"].mean().rename("knee_v")
-
-    # 3. Peak Torque and Timepoint of Peak Torque
+    # 2. Peak Torque and Timepoint of Peak Torque
     # Find the original DataFrame index corresponding to the max torque value within each group
     idx_peak_torque = grouped_torque["value"].idxmax()
     # Retrieve the peak torque value and the timepoint it occurred at using the original index
@@ -149,6 +115,13 @@ def calculate_ik_discrete_variables(ikdf: pd.DataFrame) -> pd.DataFrame:
             np.nan, index=peak_torque_info.index, name="angle_at_peak_torque"
         )
 
+    # Calculate knee_ROM for each repetition
+    knee_ROM = (
+        ikrom.groupby(["par", "trses", "set", "rep"])["value"]
+        .agg(lambda x: x.max() - x.min())
+        .rename("knee_ROM")
+    )
+
     # --- Combine all discrete variables ---
     # Start with ikwork
     ik_discrete = ikwork.copy()
@@ -157,7 +130,8 @@ def calculate_ik_discrete_variables(ikdf: pd.DataFrame) -> pd.DataFrame:
     ik_discrete = ik_discrete.join(mean_torque, how="left")
     ik_discrete = ik_discrete.join(peak_torque_info["peak_torque"], how="left")
     ik_discrete = ik_discrete.join(angle_at_peak, how="left")
-    ik_discrete = ik_discrete.join(mean_velocity, how="left")  # Add mean knee velocity
+    ik_discrete = ik_discrete.join(mean_velocity, how="left")
+    ik_discrete = ik_discrete.join(knee_ROM, how="left")
 
     # Reset index to make par, trses, set, rep regular columns
     ik_discrete = ik_discrete.reset_index()
