@@ -71,17 +71,17 @@ training_df = pd.concat([nordf, ikdf])
 training_dfilt = dame_manual_exclusions(training_df)
 
 
-# ##### DISCRETE VARIABLES #####
-# discrete_analysis_results = analyze_discrete_variables(
-#     nordict=nordict,
-#     ikdf=ikdf,
-#     training_df=training_df,
-#     results_output_path=results_output_path,
-# )
-# training_disc = discrete_analysis_results["training_disc"]
+##### DISCRETE VARIABLES #####
+discrete_analysis_results = analyze_discrete_variables(
+    nordict=nordict,
+    ikdf=ikdf,
+    training_df=training_df,
+    results_output_path=results_output_path,
+)
+training_disc = discrete_analysis_results["training_disc"]
 
-# # Filter the training data
-# training_disc = filter_training_data(training_disc)
+# Filter the training data
+training_disc = filter_training_data(training_disc)
 
 # # Report torque statistics
 # report_torque_stats(training_disc, results_output_path)
@@ -98,24 +98,24 @@ training_dfilt = dame_manual_exclusions(training_df)
 # )
 
 # Mechanical patterns.
-# ################# SPM STATISTICS ##############
-# # NH vs IK : TORQUE and Knee Velocity
-# torqcomp = spmtr.spm_group_comparison(df=training_df[training_df["var"] == "torque"])
-# kneevcom = spmtr.spm_group_comparison(df=training_df[training_df["var"] == "knee_v"])
-# generate_figure_2(training_df, torqcomp, kneevcom, figures_path)
+################# SPM STATISTICS ##############
+# NH vs IK : TORQUE and Knee Velocity
+torqcomp = spmtr.spm_group_comparison(df=training_df[training_df["var"] == "torque"])
+kneevcom = spmtr.spm_group_comparison(df=training_df[training_df["var"] == "knee_v"])
+generate_figure_2(training_df, torqcomp, kneevcom, figures_path)
 
 
-# # Plot peak torque evolution
-# plot_peak_torque_evolution(
-#     training_disc, output_path=figures_path / "peak_torque_evolution.png"
-# )
+# Plot peak torque evolution
+plot_peak_torque_evolution(
+    training_disc, output_path=figures_path / "peak_torque_evolution.png"
+)
 
-# # Run mean torque ANOVA analysis
-# anova_results = run_mixed_anova(
-#     training_disc=training_disc,
-#     output_path=figures_path / "mean_torque_anova.png",
-#     save_results=True,
-# )
+# Run mean torque ANOVA analysis
+anova_results = run_mixed_anova(
+    training_disc=training_disc,
+    output_path=figures_path / "mean_torque_anova.png",
+    save_results=False,
+)
 
 
 # Create filtered dataset with top 3 repetitions per participant and session

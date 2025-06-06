@@ -40,7 +40,7 @@ def plot_training_progression(
     # Create figure with subplots and adjust spacing
     fig = plt.figure(figsize=(12, 10))
     gs = fig.add_gridspec(
-        2, 2, height_ratios=[1, 1], width_ratios=[1, 1], hspace=0.05, wspace=0.3
+        2, 2, height_ratios=[1, 1], width_ratios=[1, 1], hspace=0.2, wspace=0.3
     )  # Minimal vertical spacing
 
     ax_nh = fig.add_subplot(gs[0, 0])

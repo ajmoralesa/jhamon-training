@@ -51,7 +51,7 @@ def plot_peak_torque_evolution(
             "legend.fontsize": 10,  # Increased from 8
             "figure.dpi": 300,
             "savefig.dpi": 300,
-            "figure.figsize": (10.8, 7.2),  # Wider figure for 2x2 subplots
+            "figure.figsize": (13.5, 7.2),  # Wider figure for 3x2 subplots
             "axes.linewidth": 0.5,
             "xtick.major.width": 0.5,
             "ytick.major.width": 0.5,
@@ -62,25 +62,29 @@ def plot_peak_torque_evolution(
         }
     )
 
-    # Create figure with four subplots (2x2)
-    fig, ((ax_mean_torque, ax_peak_torque), (ax_rom, ax_angle)) = plt.subplots(
+    # Create figure with five subplots (3x2)
+    fig, (
+        (ax_mean_torque, ax_peak_torque, ax_velocity),
+        (ax_rom, ax_angle, ax_empty),
+    ) = plt.subplots(
         2,
-        2,
-        figsize=(10.8, 7.2),
+        3,
+        figsize=(13.5, 7.2),
         sharex=True,  # Share x-axis across all subplots
         gridspec_kw={"wspace": 0.3, "hspace": 0.1},  # Further reduced vertical spacing
     )
+    ax_empty.axis("off")  # Hide the empty subplot
 
     # Define colors for the plots
     ik_color = "#1f77b4"  # Blue
-    nh_color = "#ff7f0e"  # Orange
+    nh_color = "#ff7f0e"
 
     # Process data for both groups
     for group, color in [("IK", ik_color), ("NH", nh_color)]:
         group_data = df[df["tr_group"] == group]
         sessions = sorted(group_data["trses_num"].unique())
 
-        # Calculate mean and SD for each session (torque, angle, and ROM)
+        # Calculate mean and SD for each session (torque, angle, ROM, and velocity)
         means_torque = []
         sds_torque = []
         means_angle = []
@@ -89,6 +93,8 @@ def plot_peak_torque_evolution(
         sds_rom = []
         means_peak_torque = []
         sds_peak_torque = []
+        means_velocity = []
+        sds_velocity = []
 
         for session in sessions:
             session_data = group_data[group_data["trses_num"] == session]
@@ -114,6 +120,10 @@ def plot_peak_torque_evolution(
             # Calculate statistics for ROM
             means_rom.append(top_3_reps["rom"].mean())
             sds_rom.append(top_3_reps["rom"].std())
+
+            # Calculate statistics for velocity
+            means_velocity.append(top_3_reps["knee_v_mean"].mean())
+            sds_velocity.append(top_3_reps["knee_v_mean"].std())
 
             # Add jittered points for mean torque
             jitter = np.random.normal(0, 0.1, size=len(top_3_reps))
@@ -150,6 +160,16 @@ def plot_peak_torque_evolution(
             ax_rom.scatter(
                 [session + j for j in jitter],
                 top_3_reps["rom"],
+                color=color,
+                alpha=0.3,
+                s=10,
+                edgecolors="none",
+            )
+
+            # Add jittered points for velocity
+            ax_velocity.scatter(
+                [session + j for j in jitter],
+                top_3_reps["knee_v_mean"],
                 color=color,
                 alpha=0.3,
                 s=10,
@@ -212,8 +232,22 @@ def plot_peak_torque_evolution(
             label=f"{group} Mean ± SD",
         )
 
+        # Plot mean and SD for velocity
+        ax_velocity.errorbar(
+            sessions,
+            means_velocity,
+            yerr=sds_velocity,
+            fmt="o-",
+            color=color,
+            markersize=4,
+            capsize=2,
+            capthick=0.5,
+            elinewidth=0.5,
+            label=f"{group} Mean ± SD",
+        )
+
     # Customize subplots
-    for ax in [ax_mean_torque, ax_peak_torque, ax_rom, ax_angle]:
+    for ax in [ax_mean_torque, ax_peak_torque, ax_rom, ax_angle, ax_velocity]:
         ax.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
         ax.legend(frameon=False)
         # Set x-axis ticks to show all training sessions
@@ -222,17 +256,21 @@ def plot_peak_torque_evolution(
     # Set x-labels only for bottom plots
     ax_rom.set_xlabel("Training Session")
     ax_angle.set_xlabel("Training Session")
+    ax_velocity.set_xlabel("Training Session")
 
     # Set y-labels
     ax_mean_torque.set_ylabel("Mean Torque (N·m)")
     ax_peak_torque.set_ylabel("Peak Torque (N·m)")
     ax_rom.set_ylabel("Range of Motion (°)")
     ax_angle.set_ylabel("Knee Angle at Peak Torque (°)")
+    ax_velocity.set_ylabel("Mean Knee Velocity (°/s)")
 
     # Add panel labels with adjusted vertical position
-    for i, ax in enumerate([ax_mean_torque, ax_peak_torque, ax_rom, ax_angle]):
-        label = chr(65 + i)  # A, B, C, D
-        y_pos = 1.02 if i < 2 else 1.05  # Lower position for bottom panels
+    for i, ax in enumerate(
+        [ax_mean_torque, ax_peak_torque, ax_velocity, ax_rom, ax_angle]
+    ):
+        label = chr(65 + i)  # A, B, C, D, E
+        y_pos = 1.02 if i < 3 else 1.05  # Lower position for bottom panels
         ax.text(
             -0.1,
             y_pos,
