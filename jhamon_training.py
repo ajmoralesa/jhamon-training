@@ -28,6 +28,7 @@ from jhamon_training.stats.mixed_anova_analysis import run_mixed_anova
 import json
 from jhamon_training.stats.torque_stats import report_torque_stats
 from jhamon_training.plot.plot_training_progression import plot_training_progression
+from jhamon_training.plot.figure_3_ridgeline import plot_figure_3_ridgeline
 
 
 pathtodata = Path("/Volumes/AJMA/")
@@ -82,6 +83,11 @@ training_disc = discrete_analysis_results["training_disc"]
 
 # Filter the training data
 training_disc = filter_training_data(training_disc)
+
+# Figure 3: repetitions + work-per-rep + work-per-set distributions (ridgeline)
+plot_figure_3_ridgeline(
+    training_disc, output_path=figures_path / "Figure_3_ridgeline.png"
+)
 
 # # Report torque statistics
 # report_torque_stats(training_disc, results_output_path)
