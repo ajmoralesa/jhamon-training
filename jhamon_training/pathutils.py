@@ -3,6 +3,21 @@
 from typing import Optional, Union, List
 import os
 import fnmatch
+from pathlib import Path
+
+
+# Single source of truth for where analysis results, caches, figures, and stats
+# are written/read. Moved out of ~/Desktop into the paper's project folder on
+# SynologyDrive (2026-05). If the folder ever moves again, update only this line.
+RESULTS_TRAINING_PATH = (
+    Path.home()
+    / "SynologyDrive"
+    / "perso"
+    / "RECHERCHE"
+    / "Projects"
+    / "2019_jHamON"
+    / "_RESULTS_TRAINING"
+)
 
 
 def dame_participants():

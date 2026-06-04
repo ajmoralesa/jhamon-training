@@ -26,6 +26,8 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from scipy.stats import gaussian_kde
 
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
+
 # Prescribed (fixed) NH repetitions per set, by training session.
 # Protocol: tr1 3x5, tr2-5 4x5, tr6-8 5x6, tr9-11 5x8, tr12-15 6x8.
 PRESCRIBED_REPS = {s: (5 if s <= 5 else 6 if s <= 8 else 8) for s in range(1, 16)}
@@ -227,7 +229,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Generate manuscript Figure 3 (ridgeline).")
     p.add_argument(
         "--training-disc",
-        default="/Volumes/jHamON/_RESULTS_TRAINING/oldrafts/training_disc",
+        default=str(RESULTS_TRAINING_PATH / "oldrafts" / "training_disc"),
         help="Path to a training_disc feather (wide 'work' or legacy long layout).",
     )
     p.add_argument("--out", default="reports/Figure_3_ridgeline.png")

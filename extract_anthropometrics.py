@@ -11,7 +11,7 @@ import pandas as pd
 from pathlib import Path
 import os
 import glob
-from jhamon_training.pathutils import dame_participants
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH, dame_participants
 import warnings
 
 # Suppress specific warnings
@@ -256,7 +256,7 @@ def main():
     """Main function to run the anthropometric data extraction."""
     # Define paths (same as in the main training script)
     path_to_data = Path("/Volumes/AJMA/")
-    results_output_path = Path.home() / "Desktop" / "_RESULTS_TRAINING"
+    results_output_path = RESULTS_TRAINING_PATH
     
     print("Extracting anthropometric data from Excel files...")
     print(f"Data path: {path_to_data}")

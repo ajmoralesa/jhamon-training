@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 from jhamon_training.data import frames
 from jhamon_training import check_result_file
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 
 
 def plot_angdwa_data(nordict, save_path=None):
@@ -134,7 +135,7 @@ def plot_angdwa_data(nordict, save_path=None):
 
 if __name__ == "__main__":
     # Example usage
-    results_output_path = Path.home() / "Desktop" / "_RESULTS_TRAINING"
+    results_output_path = RESULTS_TRAINING_PATH
     pathtodata = Path("/Volumes/AJMA/")
 
     # Load Nordic training data

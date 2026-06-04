@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Dict, Any, Union, List, Optional
 import json
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 
 
 def calculate_descriptive_stats(df: pd.DataFrame, dv: str) -> Dict[str, Any]:
@@ -310,7 +311,7 @@ def run_mixed_anova(
         all_results[dv] = results
 
     # Save results to training_stats.json
-    stats_path = Path.home() / "Desktop" / "_RESULTS_TRAINING" / "training_stats.json"
+    stats_path = RESULTS_TRAINING_PATH / "training_stats.json"
     try:
         # Load existing stats
         with open(stats_path) as f:

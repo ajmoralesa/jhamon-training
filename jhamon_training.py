@@ -4,6 +4,7 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
 from jhamon_training import check_result_file
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 from jhamon_training.data import frames
 import os
 from jhamon_training.data.utils import dame_manual_exclusions, filter_training_data
@@ -32,7 +33,7 @@ from jhamon_training.plot.figure_3_ridgeline import plot_figure_3_ridgeline
 
 
 pathtodata = Path("/Volumes/AJMA/")
-results_output_path = Path.home() / "Desktop" / "_RESULTS_TRAINING"
+results_output_path = RESULTS_TRAINING_PATH
 pathtosave = results_output_path
 figures_path = pathtosave / "figures"
 

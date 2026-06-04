@@ -4,12 +4,13 @@ from jhamon_training import check_result_file
 from jhamon_training.data import frames
 from jhamon_training.data.utils import dame_manual_exclusions, filter_training_data
 from jhamon_training.stats.analyses_discrete_vars import analyze_discrete_variables
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 
 
 def main():
     # Set up paths
     pathtodata = Path("/Volumes/AJMA/")
-    results_output_path = Path.home() / "Desktop" / "_RESULTS_TRAINING"
+    results_output_path = RESULTS_TRAINING_PATH
 
     # Load data
     nordict = check_result_file(

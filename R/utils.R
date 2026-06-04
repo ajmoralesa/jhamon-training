@@ -2,8 +2,11 @@ library(stringr)
 library(arrow)
 library(forcats)
 
-# pthtres <- "E:/_RESULTS_TRAINING/"
-pthtres <- "/Volumes/jHamON/_RESULTS_TRAINING"
+# Digested results live in the paper's NAS project folder (single source of
+# truth; mirrors RESULTS_TRAINING_PATH in jhamon_training/pathutils.py).
+# Older external-drive locations (kept for reference): "E:/_RESULTS_TRAINING/",
+# "/Volumes/jHamON/_RESULTS_TRAINING".
+pthtres <- "/Users/amorales/SynologyDrive/perso/RECHERCHE/Projects/2019_jHamON/_RESULTS_TRAINING"
 
 damecurvas <- function(filename, pathtofile) {
     path <- str_c(pathtofile, filename)

@@ -11,10 +11,10 @@ format:
 ```{python}
 # | echo: false
 import json
-from pathlib import Path
+from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 
 # Load the statistics from the JSON file
-stats_path = Path.home() / "Desktop" / "_RESULTS_TRAINING" / "training_stats.json"
+stats_path = RESULTS_TRAINING_PATH / "training_stats.json"
 with open(stats_path) as f:
     stats = json.load(f)
 
