@@ -1,4 +1,133 @@
-def dame_manual_exclusions(df):
+REP_KEYS = ["par", "trses", "set", "rep"]
+
+
+def dame_manual_exclusions(df, legacy=False):
+    """Drop repetitions whose curves are physically implausible.
+
+    A repetition is rejected on the evidence of ONE of its variables -- an
+    impossible starting knee angle, a force trace that never rises -- but the
+    rejection applies to the whole repetition, because a segmentation failure
+    corrupts every signal recorded over that window, not just the one that
+    happened to trip a threshold.
+
+    Two defects in the original implementation are corrected here.
+
+    1. *The exclusion was scoped to a variable, not to a repetition.* Filters
+       collected the offending rows' ``all_labels`` and dropped rows matching
+       them, but ``frames.py`` builds ``all_labels`` from
+       ``par trses set rep var tr_group`` -- the variable name is part of the
+       label. Only the flagged variable's 101 rows were therefore removed, so a
+       Nordic repetition rejected for an impossible starting angle went on
+       contributing its torque curve to every torque analysis. Measured on the
+       current caches the mismatch is large: 12 827 Nordic ``knee_ROM`` rows
+       were removed against 2 727 ``torque`` rows and 12 423 ``force`` rows,
+       i.e. three different subsets of repetitions depending on which variable
+       an analysis happened to read.
+
+    2. *The isokinetic angle threshold predated the sign convention.*
+       ``IKfilt_knee2`` tested ``knee_ROM`` at node 100 for ``> -70``, written
+       when isokinetic angles were stored negative. ``frames.ikt_todf`` now
+       converts them to the Nordic convention (``90 - abs(value)``, so about
+       +11.7 deg at the end of a repetition), and every value is greater than
+       -70: the filter matched 100 % of isokinetic repetitions (9 932 of 9 932)
+       and deleted the entire isokinetic angle dataset. Defect 1 hid it, since
+       isokinetic torque and velocity survived untouched, so nothing downstream
+       failed -- it only surfaced when an analysis needed isokinetic
+       ``knee_ROM``, which angle normalisation does. The threshold is restated
+       below in the current convention: reject a repetition that finished more
+       than 20 deg short of full extension, which is what ``> -70`` meant when
+       angles ran the other way.
+
+    Two further observations, recorded rather than silently perpetuated:
+
+    * The three ``hip_ROM`` filters are inert. ``analizame_curvas`` stopped
+      exporting ``hip_ROM`` as a normalised curve (it is commented out in
+      ``data/nordic.py``), so no row ever matches them. They are kept, disabled
+      and labelled, so that restoring the hip curves also restores the filter.
+    * ``NHfilt_hip3`` was assigned twice, the second assignment overwriting the
+      first, so the ``hip_ROM`` at node 99 ``> 30`` criterion never applied.
+      Both halves are expressed as one two-sided criterion below.
+
+    Args:
+        df: long curve frame with ``par``, ``trses``, ``set``, ``rep``, ``var``,
+            ``timepoint``, ``value`` and ``tr_group``.
+        legacy: reproduce the original variable-scoped behaviour, including the
+            broken isokinetic threshold. Only for demonstrating what the
+            published numbers were computed on; never for new analyses.
+
+    Returns:
+        The frame with the rejected repetitions removed.
+    """
+    import pandas as pd
+
+    if legacy:
+        return _dame_manual_exclusions_legacy(df)
+
+    def flagged(group, timepoint, var, op, threshold):
+        """Repetition keys whose ``var`` at ``timepoint`` fails the criterion."""
+        rows = df[
+            (df["tr_group"] == group)
+            & (df["timepoint"] == timepoint)
+            & (df["var"] == var)
+        ]
+        hit = rows["value"] > threshold if op == ">" else rows["value"] < threshold
+        return pd.MultiIndex.from_frame(rows.loc[hit, REP_KEYS])
+
+    criteria = [
+        # Nordic: knee angle must start near 90 deg of flexion and finish near
+        # extension; a repetition outside that window was mis-segmented.
+        ("NH", 0, "knee_ROM", "<", 80),
+        ("NH", 0, "knee_ROM", ">", 108),
+        ("NH", 99, "knee_ROM", ">", 45),
+        # Nordic: force must start from rest and be established by mid-descent.
+        ("NH", 1, "force", ">", 100),
+        ("NH", 60, "force", "<", 50),
+        ("NH", 0, "torque", ">", 50),
+        # Isokinetic: the dynamometer's own range, in the positive convention
+        # frames.ikt_todf now produces. Mirrors the Nordic start/end checks.
+        ("IK", 0, "knee_ROM", "<", 80),
+        ("IK", 100, "knee_ROM", ">", 20),
+        ("IK", 80, "torque", "<", 50),
+    ]
+    # Deliberately NOT carried over: ("IK", 50, "knee_ROM", ">", 50).
+    #
+    # Like IKfilt_knee2 this was written for the old negative convention, under
+    # which no isokinetic value ever exceeded 50 and the criterion was inert --
+    # it has never excluded a repetition in any published run. Reinstating it
+    # verbatim under the current positive convention would not restore an
+    # intended behaviour, it would invent one, and a harmful one: a linear sweep
+    # from 88.9 to 11.7 deg passes 50.3 deg at its midpoint, so "reject a
+    # repetition whose mid-descent angle exceeds 50 deg" sits at the centre of
+    # the normal distribution and discards 9.1 % of perfectly ordinary
+    # repetitions. The start-of-range check above expresses the plausibility
+    # constraint that the mid-descent one was presumably reaching for.
+    # Disabled: hip_ROM is no longer exported as a normalised curve, so these
+    # match nothing. Re-enable together with the curve in data/nordic.py.
+    _hip_criteria_pending_curve_restoration = [
+        ("NH", 1, "hip_ROM", ">", 10),
+        ("NH", 1, "hip_ROM", "<", -20),
+        ("NH", 99, "hip_ROM", ">", 30),
+        ("NH", 99, "hip_ROM", "<", -30),
+    ]
+    available = set(df["var"].unique())
+    active = [c for c in criteria if c[2] in available]
+
+    rejected = pd.MultiIndex.from_tuples([], names=REP_KEYS)
+    for group, timepoint, var, op, threshold in active:
+        rejected = rejected.append(flagged(group, timepoint, var, op, threshold))
+    rejected = rejected.unique()
+
+    keep = ~pd.MultiIndex.from_frame(df[REP_KEYS]).isin(rejected)
+    return df[keep]
+
+
+def _dame_manual_exclusions_legacy(df):
+    """The original variable-scoped implementation, for reproduction only.
+
+    Retained verbatim so that the published numbers can be regenerated and the
+    effect of the correction quantified. See ``dame_manual_exclusions`` for what
+    is wrong with it.
+    """
 
     import pandas as pd
     import numpy as np

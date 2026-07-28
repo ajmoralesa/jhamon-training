@@ -1,0 +1,4559 @@
+{
+  "primary_grid": {
+    "hi": 80.0,
+    "lo": 30.0
+  },
+  "mapping": {
+    "NH": {
+      "angle_start": 92.6,
+      "angle_end": 15.2,
+      "rom": 77.4,
+      "max_deviation_deg": 28.9,
+      "max_deviation_pct_rom": 37.3,
+      "angle_at_node": {
+        "0": 92.6,
+        "10": 91.0,
+        "20": 88.3,
+        "30": 84.7,
+        "40": 80.8,
+        "50": 76.7,
+        "60": 72.3,
+        "70": 66.9,
+        "80": 59.0,
+        "90": 45.6,
+        "100": 15.2
+      }
+    },
+    "IK": {
+      "angle_start": 88.9,
+      "angle_end": 11.7,
+      "rom": 77.2,
+      "max_deviation_deg": 6.7,
+      "max_deviation_pct_rom": 8.6,
+      "angle_at_node": {
+        "0": 88.9,
+        "10": 83.5,
+        "20": 74.9,
+        "30": 65.9,
+        "40": 57.0,
+        "50": 48.1,
+        "60": 39.2,
+        "70": 30.2,
+        "80": 21.3,
+        "90": 13.2,
+        "100": 11.7
+      }
+    },
+    "angle_gap_at_same_node": {
+      "0": 3.7,
+      "10": 7.5,
+      "20": 13.4,
+      "30": 18.7,
+      "40": 23.8,
+      "50": 28.7,
+      "60": 33.2,
+      "70": 36.7,
+      "80": 37.7,
+      "90": 32.5,
+      "100": 3.5
+    },
+    "max_angle_gap_deg": 37.8,
+    "max_angle_gap_node": 78,
+    "_mean_curves": {
+      "NH": [
+        92.63511622679835,
+        92.50917533212039,
+        92.37717055552129,
+        92.24385416863932,
+        92.10555113569623,
+        91.95746289527087,
+        91.79610872572252,
+        91.62428994775375,
+        91.4396194430542,
+        91.24151999465523,
+        91.0300739049203,
+        90.80401140678532,
+        90.56496293553404,
+        90.31367572725837,
+        90.0497176633425,
+        89.77408144016424,
+        89.48846366422605,
+        89.1936566819715,
+        88.89063877308492,
+        88.57674251714599,
+        88.25153123854683,
+        87.91765190461408,
+        87.5767180692167,
+        87.22871528351706,
+        86.8747814762777,
+        86.51608299561259,
+        86.15288042061849,
+        85.78694983127738,
+        85.41671597945441,
+        85.0418325566165,
+        84.6628128041801,
+        84.28094402806195,
+        83.897702469362,
+        83.51319208846773,
+        83.1284017460457,
+        82.74241490398647,
+        82.35483132669876,
+        81.96577217191734,
+        81.57320691996091,
+        81.17735872104967,
+        80.78083233162641,
+        80.38435164974155,
+        79.98611787949147,
+        79.58492282323913,
+        79.1824635285555,
+        78.78083115523759,
+        78.37689362174986,
+        77.97092068572277,
+        77.56468441747269,
+        77.15677307737293,
+        76.74533703146997,
+        76.33003780447551,
+        75.90977428479013,
+        75.48538179587227,
+        75.05586712459716,
+        74.62256983060757,
+        74.18379152292934,
+        73.73708290587288,
+        73.28143068625978,
+        72.81830763363767,
+        72.34600403692065,
+        71.86294666327301,
+        71.36992120860302,
+        70.86569992010953,
+        70.34550466305522,
+        69.80973972504903,
+        69.26002155723972,
+        68.69598250567249,
+        68.11532668673416,
+        67.51638901226627,
+        66.8954976315087,
+        66.24977959659262,
+        65.58125695723916,
+        64.88433660678423,
+        64.15747872864725,
+        63.400735586975266,
+        62.60889186712648,
+        61.77967134462957,
+        60.91130894939738,
+        60.000523530625806,
+        59.04418907390941,
+        58.03658569590061,
+        56.97056494875705,
+        55.84404719232077,
+        54.652289808730075,
+        53.38782238016896,
+        52.03798034427267,
+        50.59662320426583,
+        49.053390974669924,
+        47.397804946048524,
+        45.613638005371634,
+        43.68305151542915,
+        41.587665725630195,
+        39.30736902774655,
+        36.82129049269068,
+        34.10289593394507,
+        31.12035632413201,
+        27.836379625037576,
+        24.174577294925673,
+        20.000464354689015,
+        15.186126931913906
+      ],
+      "IK": [
+        88.91813119176392,
+        88.87460465144173,
+        88.6925263287544,
+        88.34778430357379,
+        87.85480676669606,
+        87.2627634644668,
+        86.59661114831017,
+        85.87962135158183,
+        85.12357554737571,
+        84.33724974212319,
+        83.52738787093173,
+        82.69907945556477,
+        81.8563261479223,
+        81.0023602797319,
+        80.13963920561628,
+        79.27009087050111,
+        78.3951184469101,
+        77.51581177965205,
+        76.63318279004777,
+        75.74795070556108,
+        74.86069881501582,
+        73.97210532878758,
+        73.08245333722108,
+        72.1918281588485,
+        71.30039413432897,
+        70.40827258497987,
+        69.51570047494428,
+        68.6228680161435,
+        67.72994933268139,
+        66.83692224361285,
+        65.94371831107415,
+        65.05036550577282,
+        64.15687084888224,
+        63.26345696081858,
+        62.37002265995956,
+        61.47683502343068,
+        60.58359018613594,
+        59.69031860297582,
+        58.796895762457545,
+        57.90347537284284,
+        57.01015198258455,
+        56.11694156494896,
+        55.22385008997065,
+        54.330815939697914,
+        53.437740753822446,
+        52.54458421871389,
+        51.65142959048571,
+        50.7582783965653,
+        49.86534879701886,
+        48.972514786923284,
+        48.07979390866666,
+        47.18707650041905,
+        46.29421810001709,
+        45.4013921111521,
+        44.508620546718824,
+        43.6159956104416,
+        42.72352025044315,
+        41.830993774985814,
+        40.93835332091543,
+        40.045773743056884,
+        39.15322650533249,
+        38.260852545919256,
+        37.36868208087287,
+        36.47655467577864,
+        35.5844294840327,
+        34.692234894554375,
+        33.80005486294886,
+        32.90798647309975,
+        32.01593279108756,
+        31.123942943707586,
+        30.232082066436046,
+        29.340154462452762,
+        28.44817495114984,
+        27.556202715767913,
+        26.664234436606186,
+        25.772340156176714,
+        24.880448265677412,
+        23.988481178341836,
+        23.09639827104311,
+        22.2041866343659,
+        21.311986736986544,
+        20.41973576493827,
+        19.52741729065467,
+        18.635119222478938,
+        17.742718847684383,
+        16.850065526872065,
+        15.95823783397164,
+        15.080865934296492,
+        14.287556426119096,
+        13.652209065643776,
+        13.160924245721551,
+        12.782626156882205,
+        12.49125248338918,
+        12.266902494386953,
+        12.094069177938055,
+        11.960492184129237,
+        11.85764406028075,
+        11.777621888990884,
+        11.715593717586112,
+        11.674634390501083,
+        11.697636499017822
+      ]
+    }
+  },
+  "monotonicity": {
+    "NH": {
+      "median": 0.0,
+      "p99": 0.1055,
+      "pct_above_10pct": 1.03
+    },
+    "IK": {
+      "median": 0.0,
+      "p99": 0.0195,
+      "pct_above_10pct": 0.19
+    }
+  },
+  "exclusions": {
+    "legacy": {
+      "repetitions": {
+        "NH": 5951,
+        "IK": 9932
+      },
+      "rows_per_var": {
+        "IK": {
+          "force": 0,
+          "knee_ROM": 0,
+          "knee_v": 1003132,
+          "knee_work": 1003132,
+          "torque": 990709
+        },
+        "NH": {
+          "force": 588628,
+          "knee_ROM": 588224,
+          "knee_v": 601051,
+          "knee_work": 601051,
+          "torque": 598324
+        }
+      }
+    },
+    "corrected": {
+      "repetitions": {
+        "NH": 5723,
+        "IK": 9804
+      },
+      "rows_per_var": {
+        "IK": {
+          "force": 0,
+          "knee_ROM": 990204,
+          "knee_v": 990204,
+          "knee_work": 990204,
+          "torque": 990204
+        },
+        "NH": {
+          "force": 578023,
+          "knee_ROM": 578023,
+          "knee_v": 578023,
+          "knee_work": 578023,
+          "torque": 578023
+        }
+      }
+    },
+    "baseline_repetitions": {
+      "NH": 5951,
+      "IK": 9932
+    }
+  },
+  "between_groups": {
+    "none": {
+      "torque": {
+        "time": {
+          "var": "torque",
+          "axis": "time",
+          "axis_unit": "%",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 2.974,
+          "df": 24.8,
+          "fwhm": 31.84,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 28.3,
+              "start_node": 0.0,
+              "end_node": 28.3,
+              "extent_nodes": 28.3,
+              "p": 0.0026730155669181244,
+              "z_peak": 11.79,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 72.3,
+              "end": 99.7,
+              "start_node": 72.3,
+              "end_node": 99.7,
+              "extent_nodes": 27.3,
+              "p": 0.0032548895759085816,
+              "z_peak": 4.764,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "IK>NH 0-28.3% (p = 0.003) | NH>IK 72.3-99.7% (p = 0.003)"
+        },
+        "rom_percent": {
+          "var": "torque",
+          "axis": "rom_percent",
+          "axis_unit": "%ROM",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.02,
+          "df": 24.2,
+          "fwhm": 29.02,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 7.0,
+              "start_node": 0.0,
+              "end_node": 7.0,
+              "extent_nodes": 7.0,
+              "p": 0.040246197931082195,
+              "z_peak": 11.182,
+              "direction": -1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 14.1,
+              "end": 85.2,
+              "start_node": 14.1,
+              "end_node": 85.2,
+              "extent_nodes": 71.1,
+              "p": 5.451639140119369e-12,
+              "z_peak": 8.342,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "IK>NH 0-7%ROM (p = 0.040) | NH>IK 14.1-85.2%ROM (p <0.001)"
+        },
+        "knee_angle": {
+          "var": "torque",
+          "axis": "knee_angle",
+          "axis_unit": "deg",
+          "n_nodes": 51,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 2.634,
+          "df": 20.3,
+          "fwhm": 44.55,
+          "clusters": [
+            {
+              "start": 80.0,
+              "end": 30.0,
+              "start_node": 0.0,
+              "end_node": 50.0,
+              "extent_nodes": 50.0,
+              "p": 4.489896741066701e-07,
+              "z_peak": 8.106,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "NH>IK 80-30deg (p <0.001)"
+        },
+        "_n_shared_repetitions": 15663
+      },
+      "velocity": {
+        "time": {
+          "var": "knee_v",
+          "axis": "time",
+          "axis_unit": "%",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.608,
+          "df": 12.2,
+          "fwhm": 19.39,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 0.7,
+              "start_node": 0.0,
+              "end_node": 0.7,
+              "extent_nodes": 0.7,
+              "p": 0.04966928944183824,
+              "z_peak": 14.219,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 1.2,
+              "end": 70.1,
+              "start_node": 1.2,
+              "end_node": 70.1,
+              "extent_nodes": 68.9,
+              "p": 0.0,
+              "z_peak": 37.885,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 79.1,
+              "end": 100.0,
+              "start_node": 79.1,
+              "end_node": 100.0,
+              "extent_nodes": 20.9,
+              "p": 0.00011022706389995918,
+              "z_peak": 35.977,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "NH>IK 0-0.7% (p = 0.050) | IK>NH 1.2-70.1% (p <0.001) | NH>IK 79.1-100% (p <0.001)"
+        },
+        "rom_percent": {
+          "var": "knee_v",
+          "axis": "rom_percent",
+          "axis_unit": "%ROM",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.6,
+          "df": 12.3,
+          "fwhm": 19.2,
+          "clusters": [
+            {
+              "start": 0.3,
+              "end": 29.6,
+              "start_node": 0.3,
+              "end_node": 29.6,
+              "extent_nodes": 29.3,
+              "p": 2.463572430499994e-07,
+              "z_peak": 21.138,
+              "direction": -1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 41.0,
+              "end": 100.0,
+              "start_node": 41.0,
+              "end_node": 100.0,
+              "extent_nodes": 59.0,
+              "p": 0.0,
+              "z_peak": 30.217,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "IK>NH 0.3-29.6%ROM (p <0.001) | NH>IK 41-100%ROM (p <0.001)"
+        },
+        "knee_angle": {
+          "var": "knee_v",
+          "axis": "knee_angle",
+          "axis_unit": "deg",
+          "n_nodes": 51,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5762,
+            "IK": 9901
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.187,
+          "df": 12.0,
+          "fwhm": 21.13,
+          "clusters": [
+            {
+              "start": 80.0,
+              "end": 69.3,
+              "start_node": 0.0,
+              "end_node": 10.7,
+              "extent_nodes": 10.7,
+              "p": 0.016899930573575528,
+              "z_peak": 12.549,
+              "direction": -1,
+              "unit": "deg"
+            },
+            {
+              "start": 61.9,
+              "end": 30.0,
+              "start_node": 18.1,
+              "end_node": 50.0,
+              "extent_nodes": 31.9,
+              "p": 3.153940664857302e-06,
+              "z_peak": 19.518,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "IK>NH 80-69.3deg (p = 0.017) | NH>IK 61.9-30deg (p <0.001)"
+        },
+        "_n_shared_repetitions": 15663
+      }
+    },
+    "corrected": {
+      "torque": {
+        "time": {
+          "var": "torque",
+          "axis": "time",
+          "axis_unit": "%",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 2.977,
+          "df": 24.7,
+          "fwhm": 31.69,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 28.8,
+              "start_node": 0.0,
+              "end_node": 28.8,
+              "extent_nodes": 28.8,
+              "p": 0.0023379490883557175,
+              "z_peak": 12.161,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 73.5,
+              "end": 99.6,
+              "start_node": 73.5,
+              "end_node": 99.6,
+              "extent_nodes": 26.1,
+              "p": 0.004056263029473373,
+              "z_peak": 4.708,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "IK>NH 0-28.8% (p = 0.002) | NH>IK 73.5-99.6% (p = 0.004)"
+        },
+        "rom_percent": {
+          "var": "torque",
+          "axis": "rom_percent",
+          "axis_unit": "%ROM",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.023,
+          "df": 24.1,
+          "fwhm": 28.87,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 7.2,
+              "start_node": 0.0,
+              "end_node": 7.2,
+              "extent_nodes": 7.2,
+              "p": 0.039618214504644866,
+              "z_peak": 11.482,
+              "direction": -1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 14.3,
+              "end": 84.9,
+              "start_node": 14.3,
+              "end_node": 84.9,
+              "extent_nodes": 70.7,
+              "p": 5.645706124823846e-12,
+              "z_peak": 8.259,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "IK>NH 0-7.2%ROM (p = 0.040) | NH>IK 14.3-84.9%ROM (p <0.001)"
+        },
+        "knee_angle": {
+          "var": "torque",
+          "axis": "knee_angle",
+          "axis_unit": "deg",
+          "n_nodes": 51,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 2.636,
+          "df": 20.2,
+          "fwhm": 44.54,
+          "clusters": [
+            {
+              "start": 80.0,
+              "end": 30.0,
+              "start_node": 0.0,
+              "end_node": 50.0,
+              "extent_nodes": 50.0,
+              "p": 5.243684657596503e-07,
+              "z_peak": 8.064,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "NH>IK 80-30deg (p <0.001)"
+        },
+        "_n_shared_repetitions": 15465
+      },
+      "velocity": {
+        "time": {
+          "var": "knee_v",
+          "axis": "time",
+          "axis_unit": "%",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.61,
+          "df": 12.2,
+          "fwhm": 19.3,
+          "clusters": [
+            {
+              "start": 0.0,
+              "end": 0.7,
+              "start_node": 0.0,
+              "end_node": 0.7,
+              "extent_nodes": 0.7,
+              "p": 0.0496728298703808,
+              "z_peak": 14.437,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 1.2,
+              "end": 70.3,
+              "start_node": 1.2,
+              "end_node": 70.3,
+              "extent_nodes": 69.1,
+              "p": 0.0,
+              "z_peak": 37.871,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 79.2,
+              "end": 100.0,
+              "start_node": 79.2,
+              "end_node": 100.0,
+              "extent_nodes": 20.8,
+              "p": 0.00010723155460334866,
+              "z_peak": 35.741,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "NH>IK 0-0.7% (p = 0.050) | IK>NH 1.2-70.3% (p <0.001) | NH>IK 79.2-100% (p <0.001)"
+        },
+        "rom_percent": {
+          "var": "knee_v",
+          "axis": "rom_percent",
+          "axis_unit": "%ROM",
+          "n_nodes": 101,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.604,
+          "df": 12.3,
+          "fwhm": 19.04,
+          "clusters": [
+            {
+              "start": 0.3,
+              "end": 29.7,
+              "start_node": 0.3,
+              "end_node": 29.7,
+              "extent_nodes": 29.4,
+              "p": 1.782097711622299e-07,
+              "z_peak": 21.469,
+              "direction": -1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 41.1,
+              "end": 100.0,
+              "start_node": 41.1,
+              "end_node": 100.0,
+              "extent_nodes": 58.9,
+              "p": 0.0,
+              "z_peak": 30.046,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "IK>NH 0.3-29.7%ROM (p <0.001) | NH>IK 41.1-100%ROM (p <0.001)"
+        },
+        "knee_angle": {
+          "var": "knee_v",
+          "axis": "knee_angle",
+          "axis_unit": "deg",
+          "n_nodes": 51,
+          "groups": [
+            "NH",
+            "IK"
+          ],
+          "n_nh": 13,
+          "n_ik": 14,
+          "n_reps": {
+            "NH": 5661,
+            "IK": 9804
+          },
+          "coverage": {
+            "NH": 1.0,
+            "IK": 1.0
+          },
+          "alpha": 0.05,
+          "tstar": 3.188,
+          "df": 12.0,
+          "fwhm": 21.12,
+          "clusters": [
+            {
+              "start": 80.0,
+              "end": 69.3,
+              "start_node": 0.0,
+              "end_node": 10.7,
+              "extent_nodes": 10.7,
+              "p": 0.01702589379462971,
+              "z_peak": 12.581,
+              "direction": -1,
+              "unit": "deg"
+            },
+            {
+              "start": 61.9,
+              "end": 30.0,
+              "start_node": 18.1,
+              "end_node": 50.0,
+              "extent_nodes": 31.9,
+              "p": 3.0952573264464434e-06,
+              "z_peak": 19.549,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "IK>NH 80-69.3deg (p = 0.017) | NH>IK 61.9-30deg (p <0.001)"
+        },
+        "_n_shared_repetitions": 15465
+      }
+    }
+  },
+  "grid_sensitivity": {
+    "torque": {
+      "80-30": {
+        "var": "torque",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 51,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 5762,
+          "IK": 9901
+        },
+        "coverage": {
+          "NH": 0.9682,
+          "IK": 0.9969
+        },
+        "alpha": 0.05,
+        "tstar": 2.634,
+        "df": 20.3,
+        "fwhm": 44.55,
+        "clusters": [
+          {
+            "start": 80.0,
+            "end": 30.0,
+            "start_node": 0.0,
+            "end_node": 50.0,
+            "extent_nodes": 50.0,
+            "p": 4.489896741066701e-07,
+            "z_peak": 8.106,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "NH>IK 80-30deg (p <0.001)",
+        "coverage_nh": 0.9682,
+        "coverage_ik": 0.9969
+      },
+      "85-25": {
+        "var": "torque",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 61,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 5157,
+          "IK": 9898
+        },
+        "coverage": {
+          "NH": 0.8666,
+          "IK": 0.9966
+        },
+        "alpha": 0.05,
+        "tstar": 2.728,
+        "df": 21.0,
+        "fwhm": 40.23,
+        "clusters": [
+          {
+            "start": 82.9,
+            "end": 25.0,
+            "start_node": 2.1,
+            "end_node": 60.0,
+            "extent_nodes": 57.9,
+            "p": 6.339253724907401e-05,
+            "z_peak": 8.314,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "NH>IK 82.9-25deg (p <0.001)",
+        "coverage_nh": 0.8666,
+        "coverage_ik": 0.9966
+      },
+      "88-20": {
+        "var": "torque",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 69,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 3827,
+          "IK": 9205
+        },
+        "coverage": {
+          "NH": 0.6431,
+          "IK": 0.9268
+        },
+        "alpha": 0.05,
+        "tstar": 2.795,
+        "df": 21.7,
+        "fwhm": 37.37,
+        "clusters": [
+          {
+            "start": 83.2,
+            "end": 23.1,
+            "start_node": 4.8,
+            "end_node": 64.9,
+            "extent_nodes": 60.1,
+            "p": 8.62995945061229e-06,
+            "z_peak": 8.563,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "NH>IK 83.2-23.1deg (p <0.001)",
+        "coverage_nh": 0.6431,
+        "coverage_ik": 0.9268
+      },
+      "88-15": {
+        "var": "torque",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 74,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 2485,
+          "IK": 8528
+        },
+        "coverage": {
+          "NH": 0.4176,
+          "IK": 0.8586
+        },
+        "alpha": 0.05,
+        "tstar": 2.832,
+        "df": 22.2,
+        "fwhm": 35.92,
+        "clusters": [
+          {
+            "start": 81.9,
+            "end": 22.2,
+            "start_node": 6.1,
+            "end_node": 65.8,
+            "extent_nodes": 59.7,
+            "p": 3.911965041680787e-06,
+            "z_peak": 8.372,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "NH>IK 81.9-22.2deg (p <0.001)",
+        "coverage_nh": 0.4176,
+        "coverage_ik": 0.8586
+      }
+    },
+    "velocity": {
+      "80-30": {
+        "var": "knee_v",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 51,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 5762,
+          "IK": 9901
+        },
+        "coverage": {
+          "NH": 0.9682,
+          "IK": 0.9969
+        },
+        "alpha": 0.05,
+        "tstar": 3.187,
+        "df": 12.0,
+        "fwhm": 21.13,
+        "clusters": [
+          {
+            "start": 80.0,
+            "end": 69.3,
+            "start_node": 0.0,
+            "end_node": 10.7,
+            "extent_nodes": 10.7,
+            "p": 0.016899930573575528,
+            "z_peak": 12.549,
+            "direction": -1,
+            "unit": "deg"
+          },
+          {
+            "start": 61.9,
+            "end": 30.0,
+            "start_node": 18.1,
+            "end_node": 50.0,
+            "extent_nodes": 31.9,
+            "p": 3.153940664857302e-06,
+            "z_peak": 19.518,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "IK>NH 80-69.3deg (p = 0.017) | NH>IK 61.9-30deg (p <0.001)",
+        "coverage_nh": 0.9682,
+        "coverage_ik": 0.9969
+      },
+      "85-25": {
+        "var": "knee_v",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 61,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 5157,
+          "IK": 9898
+        },
+        "coverage": {
+          "NH": 0.8666,
+          "IK": 0.9966
+        },
+        "alpha": 0.05,
+        "tstar": 3.293,
+        "df": 12.1,
+        "fwhm": 20.71,
+        "clusters": [
+          {
+            "start": 85.0,
+            "end": 69.4,
+            "start_node": 0.0,
+            "end_node": 15.6,
+            "extent_nodes": 15.6,
+            "p": 0.003993184425902907,
+            "z_peak": 11.881,
+            "direction": -1,
+            "unit": "deg"
+          },
+          {
+            "start": 62.0,
+            "end": 25.0,
+            "start_node": 23.0,
+            "end_node": 60.0,
+            "extent_nodes": 37.0,
+            "p": 2.858762737645293e-08,
+            "z_peak": 23.809,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "IK>NH 85-69.4deg (p = 0.004) | NH>IK 62-25deg (p <0.001)",
+        "coverage_nh": 0.8666,
+        "coverage_ik": 0.9966
+      },
+      "88-20": {
+        "var": "knee_v",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 69,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 3827,
+          "IK": 9205
+        },
+        "coverage": {
+          "NH": 0.6431,
+          "IK": 0.9268
+        },
+        "alpha": 0.05,
+        "tstar": 3.404,
+        "df": 12.2,
+        "fwhm": 18.89,
+        "clusters": [
+          {
+            "start": 88.0,
+            "end": 69.6,
+            "start_node": 0.0,
+            "end_node": 18.4,
+            "extent_nodes": 18.4,
+            "p": 0.0005416148889938466,
+            "z_peak": 12.326,
+            "direction": -1,
+            "unit": "deg"
+          },
+          {
+            "start": 61.9,
+            "end": 20.0,
+            "start_node": 26.1,
+            "end_node": 68.0,
+            "extent_nodes": 41.9,
+            "p": 3.3704150581570502e-12,
+            "z_peak": 25.499,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "IK>NH 88-69.6deg (p <0.001) | NH>IK 61.9-20deg (p <0.001)",
+        "coverage_nh": 0.6431,
+        "coverage_ik": 0.9268
+      },
+      "88-15": {
+        "var": "knee_v",
+        "axis": "knee_angle",
+        "axis_unit": "deg",
+        "n_nodes": 74,
+        "groups": [
+          "NH",
+          "IK"
+        ],
+        "n_nh": 13,
+        "n_ik": 14,
+        "n_reps": {
+          "NH": 2485,
+          "IK": 8528
+        },
+        "coverage": {
+          "NH": 0.4176,
+          "IK": 0.8586
+        },
+        "alpha": 0.05,
+        "tstar": 3.482,
+        "df": 12.2,
+        "fwhm": 17.6,
+        "clusters": [
+          {
+            "start": 88.0,
+            "end": 69.0,
+            "start_node": 0.0,
+            "end_node": 19.0,
+            "extent_nodes": 19.0,
+            "p": 0.00015341828547010827,
+            "z_peak": 11.816,
+            "direction": -1,
+            "unit": "deg"
+          },
+          {
+            "start": 61.2,
+            "end": 15.0,
+            "start_node": 26.8,
+            "end_node": 73.0,
+            "extent_nodes": 46.2,
+            "p": 0.0,
+            "z_peak": 25.21,
+            "direction": 1,
+            "unit": "deg"
+          }
+        ],
+        "summary": "IK>NH 88-69deg (p <0.001) | NH>IK 61.2-15deg (p <0.001)",
+        "coverage_nh": 0.4176,
+        "coverage_ik": 0.8586
+      }
+    }
+  },
+  "progression": {
+    "alpha_bonferroni": 0.00357,
+    "n_comparisons": 14,
+    "NH_unc_time": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.979,
+          "fwhm": 15.43,
+          "clusters": [
+            {
+              "start": 90.9,
+              "end": 94.1,
+              "start_node": 90.9,
+              "end_node": 94.1,
+              "extent_nodes": 3.2,
+              "p": 0.03833830421700424,
+              "z_peak": 4.283,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_2>tr_1 90.9-94.1% (p = 0.038)"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.768,
+          "fwhm": 17.68,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.75,
+          "fwhm": 18.2,
+          "clusters": [
+            {
+              "start": 95.0,
+              "end": 96.5,
+              "start_node": 95.0,
+              "end_node": 96.5,
+              "extent_nodes": 1.4,
+              "p": 0.04825492231379269,
+              "z_peak": 3.873,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_4>tr_1 95-96.5% (p = 0.048)"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.674,
+          "fwhm": 20.58,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.739,
+          "fwhm": 22.13,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.714,
+          "fwhm": 22.99,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.78,
+          "fwhm": 20.77,
+          "clusters": [
+            {
+              "start": 46.8,
+              "end": 47.6,
+              "start_node": 46.8,
+              "end_node": 47.6,
+              "extent_nodes": 0.8,
+              "p": 0.04960287995668877,
+              "z_peak": 3.798,
+              "direction": -1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_1>tr_8 46.8-47.6% (p = 0.050)"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.63,
+          "fwhm": 26.21,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.636,
+          "fwhm": 21.92,
+          "clusters": [
+            {
+              "start": 98.2,
+              "end": 100.0,
+              "start_node": 98.2,
+              "end_node": 100.0,
+              "extent_nodes": 1.8,
+              "p": 0.048274804535810345,
+              "z_peak": 4.472,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_10>tr_1 98.2-100% (p = 0.048)"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.731,
+          "fwhm": 18.76,
+          "clusters": [
+            {
+              "start": 89.7,
+              "end": 100.0,
+              "start_node": 89.7,
+              "end_node": 100.0,
+              "extent_nodes": 10.3,
+              "p": 0.009320077682936967,
+              "z_peak": 5.681,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_11>tr_1 89.7-100% (p = 0.009)"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.69,
+          "fwhm": 20.06,
+          "clusters": [
+            {
+              "start": 87.2,
+              "end": 100.0,
+              "start_node": 87.2,
+              "end_node": 100.0,
+              "extent_nodes": 12.8,
+              "p": 0.005421231662674275,
+              "z_peak": 5.744,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_12>tr_1 87.2-100% (p = 0.005)"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.771,
+          "fwhm": 17.6,
+          "clusters": [
+            {
+              "start": 0.8,
+              "end": 6.9,
+              "start_node": 0.8,
+              "end_node": 6.9,
+              "extent_nodes": 6.1,
+              "p": 0.025494061647166832,
+              "z_peak": 4.172,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 85.9,
+              "end": 99.3,
+              "start_node": 85.9,
+              "end_node": 99.3,
+              "extent_nodes": 13.4,
+              "p": 0.001832896359192926,
+              "z_peak": 6.198,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_1>tr_13 0.8-6.9% (p = 0.025) | tr_13>tr_1 85.9-99.3% (p = 0.002)"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.704,
+          "fwhm": 19.6,
+          "clusters": [
+            {
+              "start": 3.6,
+              "end": 8.7,
+              "start_node": 3.6,
+              "end_node": 8.7,
+              "extent_nodes": 5.0,
+              "p": 0.03476275048625954,
+              "z_peak": 4.305,
+              "direction": -1,
+              "unit": "%"
+            },
+            {
+              "start": 88.3,
+              "end": 97.5,
+              "start_node": 88.3,
+              "end_node": 97.5,
+              "extent_nodes": 9.2,
+              "p": 0.014745935879346472,
+              "z_peak": 4.839,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_1>tr_14 3.6-8.7% (p = 0.035) | tr_14>tr_1 88.3-97.5% (p = 0.015)"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.05,
+          "tstar": 4.198,
+          "fwhm": 18.93,
+          "clusters": [
+            {
+              "start": 85.3,
+              "end": 96.6,
+              "start_node": 85.3,
+              "end_node": 96.6,
+              "extent_nodes": 11.3,
+              "p": 0.004064562074767908,
+              "z_peak": 5.788,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_15>tr_1 85.3-96.6% (p = 0.004)"
+        }
+      },
+      "n_sig": 9,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_2",
+        "tr_4",
+        "tr_8",
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_10",
+      "cluster_start_min": 0.8,
+      "cluster_start_max": 98.2,
+      "cluster_end_min": 6.9,
+      "cluster_end_max": 100.0
+    },
+    "NH_unc_rom_percent": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 4.017,
+          "fwhm": 14.57,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.797,
+          "fwhm": 16.89,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.795,
+          "fwhm": 16.94,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.693,
+          "fwhm": 19.96,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.84,
+          "fwhm": 18.97,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.716,
+          "fwhm": 22.93,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.8,
+          "fwhm": 20.16,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.678,
+          "fwhm": 24.31,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.597,
+          "fwhm": 23.39,
+          "clusters": [
+            {
+              "start": 92.2,
+              "end": 100.0,
+              "start_node": 92.2,
+              "end_node": 100.0,
+              "extent_nodes": 7.8,
+              "p": 0.028093109944112404,
+              "z_peak": 4.472,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_10>tr_1 92.2-100%ROM (p = 0.028)"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.697,
+          "fwhm": 19.85,
+          "clusters": [
+            {
+              "start": 63.6,
+              "end": 100.0,
+              "start_node": 63.6,
+              "end_node": 100.0,
+              "extent_nodes": 36.4,
+              "p": 4.106455175900692e-10,
+              "z_peak": 5.533,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_11>tr_1 63.6-100%ROM (p <0.001)"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.677,
+          "fwhm": 20.48,
+          "clusters": [
+            {
+              "start": 59.4,
+              "end": 100.0,
+              "start_node": 59.4,
+              "end_node": 100.0,
+              "extent_nodes": 40.6,
+              "p": 2.3329560505658264e-11,
+              "z_peak": 4.64,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_12>tr_1 59.4-100%ROM (p <0.001)"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.766,
+          "fwhm": 17.73,
+          "clusters": [
+            {
+              "start": 0.2,
+              "end": 1.1,
+              "start_node": 0.2,
+              "end_node": 1.1,
+              "extent_nodes": 0.9,
+              "p": 0.049198568439259294,
+              "z_peak": 3.966,
+              "direction": -1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 45.2,
+              "end": 95.7,
+              "start_node": 45.2,
+              "end_node": 95.7,
+              "extent_nodes": 50.5,
+              "p": 0.0,
+              "z_peak": 5.566,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_1>tr_13 0.2-1.1%ROM (p = 0.049) | tr_13>tr_1 45.2-95.7%ROM (p <0.001)"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.68,
+          "fwhm": 20.39,
+          "clusters": [
+            {
+              "start": 56.3,
+              "end": 82.7,
+              "start_node": 56.3,
+              "end_node": 82.7,
+              "extent_nodes": 26.4,
+              "p": 5.2091919764407635e-06,
+              "z_peak": 4.164,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_14>tr_1 56.3-82.7%ROM (p <0.001)"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.05,
+          "tstar": 4.12,
+          "fwhm": 20.86,
+          "clusters": [
+            {
+              "start": 51.1,
+              "end": 79.8,
+              "start_node": 51.1,
+              "end_node": 79.8,
+              "extent_nodes": 28.7,
+              "p": 1.281279666809354e-07,
+              "z_peak": 5.013,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_15>tr_1 51.1-79.8%ROM (p <0.001)"
+        }
+      },
+      "n_sig": 6,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_10",
+      "cluster_start_min": 0.2,
+      "cluster_start_max": 92.2,
+      "cluster_end_min": 1.1,
+      "cluster_end_max": 100.0
+    },
+    "NH_unc_knee_angle": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.522,
+          "fwhm": 15.57,
+          "clusters": [
+            {
+              "start": 47.2,
+              "end": 30.5,
+              "start_node": 32.8,
+              "end_node": 49.5,
+              "extent_nodes": 16.7,
+              "p": 0.00013941329008471115,
+              "z_peak": 4.716,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_2>tr_1 47.2-30.5deg (p <0.001)"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.375,
+          "fwhm": 17.06,
+          "clusters": [
+            {
+              "start": 44.9,
+              "end": 34.5,
+              "start_node": 35.1,
+              "end_node": 45.5,
+              "extent_nodes": 10.4,
+              "p": 0.008789395014755952,
+              "z_peak": 4.631,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_3>tr_1 44.9-34.5deg (p = 0.009)"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.416,
+          "fwhm": 15.88,
+          "clusters": [
+            {
+              "start": 44.4,
+              "end": 32.2,
+              "start_node": 35.6,
+              "end_node": 47.8,
+              "extent_nodes": 12.2,
+              "p": 0.002896043410663962,
+              "z_peak": 4.311,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_4>tr_1 44.4-32.2deg (p = 0.003)"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.299,
+          "fwhm": 19.55,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.277,
+          "fwhm": 23.5,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.294,
+          "fwhm": 22.84,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.348,
+          "fwhm": 20.78,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.05,
+          "tstar": 3.406,
+          "fwhm": 18.84,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.121,
+          "fwhm": 27.2,
+          "clusters": [
+            {
+              "start": 41.6,
+              "end": 30.0,
+              "start_node": 38.4,
+              "end_node": 50.0,
+              "extent_nodes": 11.6,
+              "p": 0.02400547850450141,
+              "z_peak": 3.885,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_10>tr_1 41.6-30deg (p = 0.024)"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.25,
+          "fwhm": 21.33,
+          "clusters": [
+            {
+              "start": 49.8,
+              "end": 30.0,
+              "start_node": 30.2,
+              "end_node": 50.0,
+              "extent_nodes": 19.8,
+              "p": 0.0011257037692653515,
+              "z_peak": 5.025,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_11>tr_1 49.8-30deg (p = 0.001)"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.25,
+          "fwhm": 21.33,
+          "clusters": [
+            {
+              "start": 48.4,
+              "end": 30.0,
+              "start_node": 31.6,
+              "end_node": 50.0,
+              "extent_nodes": 18.4,
+              "p": 0.0018859604928900264,
+              "z_peak": 5.159,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_12>tr_1 48.4-30deg (p = 0.002)"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.287,
+          "fwhm": 19.96,
+          "clusters": [
+            {
+              "start": 63.9,
+              "end": 30.0,
+              "start_node": 16.1,
+              "end_node": 50.0,
+              "extent_nodes": 33.9,
+              "p": 1.2469249344171374e-07,
+              "z_peak": 6.724,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_13>tr_1 63.9-30deg (p <0.001)"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.222,
+          "fwhm": 22.48,
+          "clusters": [
+            {
+              "start": 57.1,
+              "end": 33.8,
+              "start_node": 22.9,
+              "end_node": 46.2,
+              "extent_nodes": 23.3,
+              "p": 0.00048487636747207574,
+              "z_peak": 4.978,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_14>tr_1 57.1-33.8deg (p <0.001)"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.05,
+          "tstar": 3.645,
+          "fwhm": 19.57,
+          "clusters": [
+            {
+              "start": 61.9,
+              "end": 35.3,
+              "start_node": 18.1,
+              "end_node": 44.7,
+              "extent_nodes": 26.6,
+              "p": 2.0228278008183054e-06,
+              "z_peak": 5.884,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_15>tr_1 61.9-35.3deg (p <0.001)"
+        }
+      },
+      "n_sig": 9,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_2",
+        "tr_3",
+        "tr_4",
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_10",
+      "cluster_start_min": 41.6,
+      "cluster_start_max": 63.9,
+      "cluster_end_min": 30.0,
+      "cluster_end_max": 35.3
+    },
+    "NH_bonf_time": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 6.032,
+          "fwhm": 15.43,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.626,
+          "fwhm": 17.68,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.605,
+          "fwhm": 18.2,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.517,
+          "fwhm": 20.58,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.742,
+          "fwhm": 22.13,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.713,
+          "fwhm": 22.99,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.792,
+          "fwhm": 20.77,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.611,
+          "fwhm": 26.21,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.473,
+          "fwhm": 21.92,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.584,
+          "fwhm": 18.76,
+          "clusters": [
+            {
+              "start": 95.8,
+              "end": 96.5,
+              "start_node": 95.8,
+              "end_node": 96.5,
+              "extent_nodes": 0.7,
+              "p": 0.003512622567097612,
+              "z_peak": 5.681,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_11>tr_1 95.8-96.5% (p = 0.004)"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.536,
+          "fwhm": 20.06,
+          "clusters": [
+            {
+              "start": 93.7,
+              "end": 97.6,
+              "start_node": 93.7,
+              "end_node": 97.6,
+              "extent_nodes": 3.9,
+              "p": 0.002319786353633946,
+              "z_peak": 5.744,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_12>tr_1 93.7-97.6% (p = 0.002)"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.629,
+          "fwhm": 17.6,
+          "clusters": [
+            {
+              "start": 89.6,
+              "end": 95.6,
+              "start_node": 89.6,
+              "end_node": 95.6,
+              "extent_nodes": 5.9,
+              "p": 0.0009113761006567245,
+              "z_peak": 6.198,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_13>tr_1 89.6-95.6% (p <0.001)"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.552,
+          "fwhm": 19.6,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.0035714285714285718,
+          "tstar": 6.804,
+          "fwhm": 18.93,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        }
+      },
+      "n_sig": 3,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_11",
+        "tr_12",
+        "tr_13"
+      ],
+      "first_sustained": null,
+      "cluster_start_min": 89.6,
+      "cluster_start_max": 95.8,
+      "cluster_end_min": 95.6,
+      "cluster_end_max": 97.6
+    },
+    "NH_bonf_rom_percent": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 6.078,
+          "fwhm": 14.57,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.659,
+          "fwhm": 16.89,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.657,
+          "fwhm": 16.94,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.539,
+          "fwhm": 19.96,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.864,
+          "fwhm": 18.97,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.714,
+          "fwhm": 22.93,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.816,
+          "fwhm": 20.16,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.669,
+          "fwhm": 24.31,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.428,
+          "fwhm": 23.39,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.543,
+          "fwhm": 19.85,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.521,
+          "fwhm": 20.48,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.624,
+          "fwhm": 17.73,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.524,
+          "fwhm": 20.39,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.0035714285714285718,
+          "tstar": 6.7,
+          "fwhm": 20.86,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        }
+      },
+      "n_sig": 0,
+      "n_tested": 14,
+      "sig_sessions": [],
+      "first_sustained": null,
+      "cluster_start_min": null,
+      "cluster_start_max": null,
+      "cluster_end_min": null,
+      "cluster_end_max": null
+    },
+    "NH_bonf_knee_angle": {
+      "per_session": {
+        "tr_2": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.482,
+          "fwhm": 15.57,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.171,
+          "fwhm": 17.06,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.219,
+          "fwhm": 15.88,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.083,
+          "fwhm": 19.55,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.187,
+          "fwhm": 23.5,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.206,
+          "fwhm": 22.84,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.273,
+          "fwhm": 20.78,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 11,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.342,
+          "fwhm": 18.84,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.876,
+          "fwhm": 27.2,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_11": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.027,
+          "fwhm": 21.33,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_12": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.027,
+          "fwhm": 21.33,
+          "clusters": [
+            {
+              "start": 37.8,
+              "end": 31.5,
+              "start_node": 42.2,
+              "end_node": 48.5,
+              "extent_nodes": 6.3,
+              "p": 0.001532926399401724,
+              "z_peak": 5.159,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_12>tr_1 37.8-31.5deg (p = 0.002)"
+        },
+        "tr_13": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.069,
+          "fwhm": 19.96,
+          "clusters": [
+            {
+              "start": 54.9,
+              "end": 35.1,
+              "start_node": 25.1,
+              "end_node": 44.9,
+              "extent_nodes": 19.8,
+              "p": 2.0539460510171637e-07,
+              "z_peak": 6.724,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_13>tr_1 54.9-35.1deg (p <0.001)"
+        },
+        "tr_14": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.994,
+          "fwhm": 22.48,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_15": {
+          "n": 9,
+          "alpha": 0.0035714285714285718,
+          "tstar": 6.062,
+          "fwhm": 19.57,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        }
+      },
+      "n_sig": 2,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_12",
+        "tr_13"
+      ],
+      "first_sustained": null,
+      "cluster_start_min": 37.8,
+      "cluster_start_max": 54.9,
+      "cluster_end_min": 31.5,
+      "cluster_end_max": 35.1
+    },
+    "IK_unc_time": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.649,
+          "fwhm": 18.46,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.582,
+          "fwhm": 20.72,
+          "clusters": [
+            {
+              "start": 97.6,
+              "end": 100.0,
+              "start_node": 97.6,
+              "end_node": 100.0,
+              "extent_nodes": 2.4,
+              "p": 0.046748921333388926,
+              "z_peak": 3.862,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_3>tr_1 97.6-100% (p = 0.047)"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.626,
+          "fwhm": 19.21,
+          "clusters": [
+            {
+              "start": 85.8,
+              "end": 94.7,
+              "start_node": 85.8,
+              "end_node": 94.7,
+              "extent_nodes": 8.9,
+              "p": 0.015955099332061184,
+              "z_peak": 3.884,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_4>tr_1 85.8-94.7% (p = 0.016)"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.517,
+          "fwhm": 23.22,
+          "clusters": [
+            {
+              "start": 83.3,
+              "end": 100.0,
+              "start_node": 83.3,
+              "end_node": 100.0,
+              "extent_nodes": 16.7,
+              "p": 0.0037655085195442695,
+              "z_peak": 4.845,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_5>tr_1 83.3-100% (p = 0.004)"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.559,
+          "fwhm": 21.58,
+          "clusters": [
+            {
+              "start": 81.3,
+              "end": 100.0,
+              "start_node": 81.3,
+              "end_node": 100.0,
+              "extent_nodes": 18.7,
+              "p": 0.0010416295279069843,
+              "z_peak": 4.533,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_6>tr_1 81.3-100% (p = 0.001)"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.595,
+          "fwhm": 20.27,
+          "clusters": [
+            {
+              "start": 66.9,
+              "end": 100.0,
+              "start_node": 66.9,
+              "end_node": 100.0,
+              "extent_nodes": 33.1,
+              "p": 4.110200024776134e-08,
+              "z_peak": 6.021,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_7>tr_1 66.9-100% (p <0.001)"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.535,
+          "fwhm": 22.48,
+          "clusters": [
+            {
+              "start": 66.9,
+              "end": 69.6,
+              "start_node": 66.9,
+              "end_node": 69.6,
+              "extent_nodes": 2.7,
+              "p": 0.04641632344047841,
+              "z_peak": 3.644,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 81.4,
+              "end": 100.0,
+              "start_node": 81.4,
+              "end_node": 100.0,
+              "extent_nodes": 18.6,
+              "p": 0.0015632583894393814,
+              "z_peak": 4.611,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_8>tr_1 66.9-69.6% (p = 0.046) | tr_8>tr_1 81.4-100% (p = 0.002)"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.527,
+          "fwhm": 22.82,
+          "clusters": [
+            {
+              "start": 82.6,
+              "end": 100.0,
+              "start_node": 82.6,
+              "end_node": 100.0,
+              "extent_nodes": 17.4,
+              "p": 0.0026742343489241094,
+              "z_peak": 6.678,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_9>tr_1 82.6-100% (p = 0.003)"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.52,
+          "fwhm": 23.09,
+          "clusters": [
+            {
+              "start": 42.1,
+              "end": 52.9,
+              "start_node": 42.1,
+              "end_node": 52.9,
+              "extent_nodes": 10.8,
+              "p": 0.016834037869571494,
+              "z_peak": 3.756,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 54.3,
+              "end": 56.4,
+              "start_node": 54.3,
+              "end_node": 56.4,
+              "extent_nodes": 2.1,
+              "p": 0.047900333190246114,
+              "z_peak": 3.557,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 57.4,
+              "end": 100.0,
+              "start_node": 57.4,
+              "end_node": 100.0,
+              "extent_nodes": 42.6,
+              "p": 1.6989756268515066e-09,
+              "z_peak": 5.27,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_10>tr_1 42.1-52.9% (p = 0.017) | tr_10>tr_1 54.3-56.4% (p = 0.048) | tr_10>tr_1 57.4-100% (p <0.001)"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.537,
+          "fwhm": 22.42,
+          "clusters": [
+            {
+              "start": 67.6,
+              "end": 100.0,
+              "start_node": 67.6,
+              "end_node": 100.0,
+              "extent_nodes": 32.4,
+              "p": 1.180351927532186e-06,
+              "z_peak": 7.397,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_11>tr_1 67.6-100% (p <0.001)"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.584,
+          "fwhm": 20.66,
+          "clusters": [
+            {
+              "start": 42.4,
+              "end": 100.0,
+              "start_node": 42.4,
+              "end_node": 100.0,
+              "extent_nodes": 57.6,
+              "p": 0.0,
+              "z_peak": 8.152,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_12>tr_1 42.4-100% (p <0.001)"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.673,
+          "fwhm": 17.72,
+          "clusters": [
+            {
+              "start": 31.5,
+              "end": 100.0,
+              "start_node": 31.5,
+              "end_node": 100.0,
+              "extent_nodes": 68.5,
+              "p": 0.0,
+              "z_peak": 7.555,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_13>tr_1 31.5-100% (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.653,
+          "fwhm": 18.33,
+          "clusters": [
+            {
+              "start": 29.7,
+              "end": 100.0,
+              "start_node": 29.7,
+              "end_node": 100.0,
+              "extent_nodes": 70.3,
+              "p": 0.0,
+              "z_peak": 8.291,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_14>tr_1 29.7-100% (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.746,
+          "fwhm": 18.33,
+          "clusters": [
+            {
+              "start": 20.9,
+              "end": 100.0,
+              "start_node": 20.9,
+              "end_node": 100.0,
+              "extent_nodes": 79.1,
+              "p": 0.0,
+              "z_peak": 9.35,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_15>tr_1 20.9-100% (p <0.001)"
+        }
+      },
+      "n_sig": 13,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_3",
+        "tr_4",
+        "tr_5",
+        "tr_6",
+        "tr_7",
+        "tr_8",
+        "tr_9",
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_3",
+      "cluster_start_min": 20.9,
+      "cluster_start_max": 97.6,
+      "cluster_end_min": 52.9,
+      "cluster_end_max": 100.0
+    },
+    "IK_unc_rom_percent": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.65,
+          "fwhm": 18.43,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.563,
+          "fwhm": 21.43,
+          "clusters": [
+            {
+              "start": 99.5,
+              "end": 100.0,
+              "start_node": 99.5,
+              "end_node": 100.0,
+              "extent_nodes": 0.5,
+              "p": 0.0498577256158228,
+              "z_peak": 3.862,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_3>tr_1 99.5-100%ROM (p = 0.050)"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.604,
+          "fwhm": 19.95,
+          "clusters": [
+            {
+              "start": 95.6,
+              "end": 99.2,
+              "start_node": 95.6,
+              "end_node": 99.2,
+              "extent_nodes": 3.6,
+              "p": 0.042312147448679616,
+              "z_peak": 3.796,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_4>tr_1 95.6-99.2%ROM (p = 0.042)"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.514,
+          "fwhm": 23.33,
+          "clusters": [
+            {
+              "start": 91.9,
+              "end": 100.0,
+              "start_node": 91.9,
+              "end_node": 100.0,
+              "extent_nodes": 8.1,
+              "p": 0.027489450200403054,
+              "z_peak": 4.579,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_5>tr_1 91.9-100%ROM (p = 0.027)"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.495,
+          "fwhm": 24.12,
+          "clusters": [
+            {
+              "start": 83.5,
+              "end": 84.2,
+              "start_node": 83.5,
+              "end_node": 84.2,
+              "extent_nodes": 0.7,
+              "p": 0.049817807819386495,
+              "z_peak": 3.507,
+              "direction": 1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 86.4,
+              "end": 100.0,
+              "start_node": 86.4,
+              "end_node": 100.0,
+              "extent_nodes": 13.6,
+              "p": 0.01025420836157731,
+              "z_peak": 4.452,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_6>tr_1 83.5-84.2%ROM (p = 0.050) | tr_6>tr_1 86.4-100%ROM (p = 0.010)"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.591,
+          "fwhm": 20.39,
+          "clusters": [
+            {
+              "start": 72.8,
+              "end": 100.0,
+              "start_node": 72.8,
+              "end_node": 100.0,
+              "extent_nodes": 27.2,
+              "p": 4.390889623451244e-06,
+              "z_peak": 6.021,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_7>tr_1 72.8-100%ROM (p <0.001)"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.518,
+          "fwhm": 23.18,
+          "clusters": [
+            {
+              "start": 72.4,
+              "end": 77.0,
+              "start_node": 72.4,
+              "end_node": 77.0,
+              "extent_nodes": 4.6,
+              "p": 0.04098849818943506,
+              "z_peak": 3.629,
+              "direction": 1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 88.9,
+              "end": 100.0,
+              "start_node": 88.9,
+              "end_node": 100.0,
+              "extent_nodes": 11.1,
+              "p": 0.0157781672267141,
+              "z_peak": 4.241,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_8>tr_1 72.4-77%ROM (p = 0.041) | tr_8>tr_1 88.9-100%ROM (p = 0.016)"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.544,
+          "fwhm": 22.13,
+          "clusters": [
+            {
+              "start": 91.7,
+              "end": 100.0,
+              "start_node": 91.7,
+              "end_node": 100.0,
+              "extent_nodes": 8.3,
+              "p": 0.02438356601926195,
+              "z_peak": 6.678,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_9>tr_1 91.7-100%ROM (p = 0.024)"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.512,
+          "fwhm": 23.41,
+          "clusters": [
+            {
+              "start": 43.8,
+              "end": 55.6,
+              "start_node": 43.8,
+              "end_node": 55.6,
+              "extent_nodes": 11.8,
+              "p": 0.013898267574712131,
+              "z_peak": 3.702,
+              "direction": 1,
+              "unit": "%ROM"
+            },
+            {
+              "start": 62.8,
+              "end": 100.0,
+              "start_node": 62.8,
+              "end_node": 100.0,
+              "extent_nodes": 37.2,
+              "p": 1.4778773738122197e-07,
+              "z_peak": 5.19,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_10>tr_1 43.8-55.6%ROM (p = 0.014) | tr_10>tr_1 62.8-100%ROM (p <0.001)"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.519,
+          "fwhm": 23.14,
+          "clusters": [
+            {
+              "start": 73.1,
+              "end": 100.0,
+              "start_node": 73.1,
+              "end_node": 100.0,
+              "extent_nodes": 26.9,
+              "p": 5.5809394968742154e-05,
+              "z_peak": 7.397,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_11>tr_1 73.1-100%ROM (p <0.001)"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.575,
+          "fwhm": 20.99,
+          "clusters": [
+            {
+              "start": 44.2,
+              "end": 100.0,
+              "start_node": 44.2,
+              "end_node": 100.0,
+              "extent_nodes": 55.8,
+              "p": 0.0,
+              "z_peak": 7.573,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_12>tr_1 44.2-100%ROM (p <0.001)"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.647,
+          "fwhm": 18.53,
+          "clusters": [
+            {
+              "start": 31.3,
+              "end": 100.0,
+              "start_node": 31.3,
+              "end_node": 100.0,
+              "extent_nodes": 68.7,
+              "p": 0.0,
+              "z_peak": 7.3,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_13>tr_1 31.3-100%ROM (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.637,
+          "fwhm": 18.84,
+          "clusters": [
+            {
+              "start": 28.5,
+              "end": 100.0,
+              "start_node": 28.5,
+              "end_node": 100.0,
+              "extent_nodes": 71.5,
+              "p": 0.0,
+              "z_peak": 8.398,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_14>tr_1 28.5-100%ROM (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.772,
+          "fwhm": 17.56,
+          "clusters": [
+            {
+              "start": 18.6,
+              "end": 100.0,
+              "start_node": 18.6,
+              "end_node": 100.0,
+              "extent_nodes": 81.4,
+              "p": 0.0,
+              "z_peak": 8.031,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_15>tr_1 18.6-100%ROM (p <0.001)"
+        }
+      },
+      "n_sig": 13,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_3",
+        "tr_4",
+        "tr_5",
+        "tr_6",
+        "tr_7",
+        "tr_8",
+        "tr_9",
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_3",
+      "cluster_start_min": 18.6,
+      "cluster_start_max": 99.5,
+      "cluster_end_min": 55.6,
+      "cluster_end_max": 100.0
+    },
+    "IK_unc_knee_angle": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.237,
+          "fwhm": 19.31,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.117,
+          "fwhm": 24.34,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.125,
+          "fwhm": 23.96,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.0,
+          "fwhm": 30.86,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 2.955,
+          "fwhm": 33.93,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.017,
+          "fwhm": 29.78,
+          "clusters": [
+            {
+              "start": 33.5,
+              "end": 30.0,
+              "start_node": 46.5,
+              "end_node": 50.0,
+              "extent_nodes": 3.5,
+              "p": 0.04748166964369238,
+              "z_peak": 3.394,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_7>tr_1 33.5-30deg (p = 0.047)"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.012,
+          "fwhm": 30.07,
+          "clusters": [
+            {
+              "start": 33.9,
+              "end": 30.0,
+              "start_node": 46.1,
+              "end_node": 50.0,
+              "extent_nodes": 3.9,
+              "p": 0.04696778227071485,
+              "z_peak": 3.084,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_8>tr_1 33.9-30deg (p = 0.047)"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 2.964,
+          "fwhm": 33.3,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 2.968,
+          "fwhm": 33.01,
+          "clusters": [
+            {
+              "start": 60.1,
+              "end": 30.0,
+              "start_node": 19.9,
+              "end_node": 50.0,
+              "extent_nodes": 30.1,
+              "p": 0.0022145188844195918,
+              "z_peak": 3.509,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_10>tr_1 60.1-30deg (p = 0.002)"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 2.975,
+          "fwhm": 32.52,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 2.946,
+          "fwhm": 34.56,
+          "clusters": [
+            {
+              "start": 57.2,
+              "end": 30.0,
+              "start_node": 22.8,
+              "end_node": 50.0,
+              "extent_nodes": 27.2,
+              "p": 0.005092844476494163,
+              "z_peak": 4.421,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_12>tr_1 57.2-30deg (p = 0.005)"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.106,
+          "fwhm": 24.88,
+          "clusters": [
+            {
+              "start": 66.8,
+              "end": 30.0,
+              "start_node": 13.2,
+              "end_node": 50.0,
+              "extent_nodes": 36.8,
+              "p": 7.193121209558839e-06,
+              "z_peak": 5.433,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_13>tr_1 66.8-30deg (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.05,
+          "tstar": 3.144,
+          "fwhm": 23.08,
+          "clusters": [
+            {
+              "start": 68.3,
+              "end": 30.0,
+              "start_node": 11.7,
+              "end_node": 50.0,
+              "extent_nodes": 38.3,
+              "p": 5.6940426640395e-07,
+              "z_peak": 7.087,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_14>tr_1 68.3-30deg (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.05,
+          "tstar": 3.238,
+          "fwhm": 21.81,
+          "clusters": [
+            {
+              "start": 75.6,
+              "end": 30.0,
+              "start_node": 4.4,
+              "end_node": 50.0,
+              "extent_nodes": 45.6,
+              "p": 2.512230423690198e-10,
+              "z_peak": 7.374,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_15>tr_1 75.6-30deg (p <0.001)"
+        }
+      },
+      "n_sig": 7,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_7",
+        "tr_8",
+        "tr_10",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_12",
+      "cluster_start_min": 33.5,
+      "cluster_start_max": 75.6,
+      "cluster_end_min": 30.0,
+      "cluster_end_max": 30.0
+    },
+    "IK_bonf_time": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.371,
+          "fwhm": 18.46,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.295,
+          "fwhm": 20.72,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.345,
+          "fwhm": 19.21,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.222,
+          "fwhm": 23.22,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.269,
+          "fwhm": 21.58,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.31,
+          "fwhm": 20.27,
+          "clusters": [
+            {
+              "start": 97.1,
+              "end": 100.0,
+              "start_node": 97.1,
+              "end_node": 100.0,
+              "extent_nodes": 2.9,
+              "p": 0.0028754722229245022,
+              "z_peak": 6.021,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_7>tr_1 97.1-100% (p = 0.003)"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.243,
+          "fwhm": 22.48,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.233,
+          "fwhm": 22.82,
+          "clusters": [
+            {
+              "start": 96.7,
+              "end": 100.0,
+              "start_node": 96.7,
+              "end_node": 100.0,
+              "extent_nodes": 3.3,
+              "p": 0.0028870048958495875,
+              "z_peak": 6.678,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_9>tr_1 96.7-100% (p = 0.003)"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.226,
+          "fwhm": 23.09,
+          "clusters": [
+            {
+              "start": 98.8,
+              "end": 99.5,
+              "start_node": 98.8,
+              "end_node": 99.5,
+              "extent_nodes": 0.7,
+              "p": 0.003537106535276502,
+              "z_peak": 5.27,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_10>tr_1 98.8-99.5% (p = 0.004)"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.245,
+          "fwhm": 22.42,
+          "clusters": [
+            {
+              "start": 94.7,
+              "end": 100.0,
+              "start_node": 94.7,
+              "end_node": 100.0,
+              "extent_nodes": 5.3,
+              "p": 0.0019703487509927786,
+              "z_peak": 7.397,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_11>tr_1 94.7-100% (p = 0.002)"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.297,
+          "fwhm": 20.66,
+          "clusters": [
+            {
+              "start": 66.9,
+              "end": 100.0,
+              "start_node": 66.9,
+              "end_node": 100.0,
+              "extent_nodes": 33.1,
+              "p": 3.9968028886505635e-15,
+              "z_peak": 8.152,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_12>tr_1 66.9-100% (p <0.001)"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.397,
+          "fwhm": 17.72,
+          "clusters": [
+            {
+              "start": 41.7,
+              "end": 52.6,
+              "start_node": 41.7,
+              "end_node": 52.6,
+              "extent_nodes": 10.9,
+              "p": 5.449044367078493e-05,
+              "z_peak": 5.874,
+              "direction": 1,
+              "unit": "%"
+            },
+            {
+              "start": 53.0,
+              "end": 100.0,
+              "start_node": 53.0,
+              "end_node": 100.0,
+              "extent_nodes": 47.0,
+              "p": 0.0,
+              "z_peak": 7.555,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_13>tr_1 41.7-52.6% (p <0.001) | tr_13>tr_1 53-100% (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.375,
+          "fwhm": 18.33,
+          "clusters": [
+            {
+              "start": 38.3,
+              "end": 100.0,
+              "start_node": 38.3,
+              "end_node": 100.0,
+              "extent_nodes": 61.7,
+              "p": 0.0,
+              "z_peak": 8.291,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_14>tr_1 38.3-100% (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.6,
+          "fwhm": 18.33,
+          "clusters": [
+            {
+              "start": 31.2,
+              "end": 100.0,
+              "start_node": 31.2,
+              "end_node": 100.0,
+              "extent_nodes": 68.8,
+              "p": 0.0,
+              "z_peak": 9.35,
+              "direction": 1,
+              "unit": "%"
+            }
+          ],
+          "summary": "tr_15>tr_1 31.2-100% (p <0.001)"
+        }
+      },
+      "n_sig": 8,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_7",
+        "tr_9",
+        "tr_10",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_9",
+      "cluster_start_min": 31.2,
+      "cluster_start_max": 98.8,
+      "cluster_end_min": 52.6,
+      "cluster_end_max": 100.0
+    },
+    "IK_bonf_rom_percent": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.372,
+          "fwhm": 18.43,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.274,
+          "fwhm": 21.43,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.32,
+          "fwhm": 19.95,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.219,
+          "fwhm": 23.33,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.198,
+          "fwhm": 24.12,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.306,
+          "fwhm": 20.39,
+          "clusters": [
+            {
+              "start": 99.5,
+              "end": 100.0,
+              "start_node": 99.5,
+              "end_node": 100.0,
+              "extent_nodes": 0.5,
+              "p": 0.0035526538499743854,
+              "z_peak": 6.021,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_7>tr_1 99.5-100%ROM (p = 0.004)"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.223,
+          "fwhm": 23.18,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.253,
+          "fwhm": 22.13,
+          "clusters": [
+            {
+              "start": 99.4,
+              "end": 100.0,
+              "start_node": 99.4,
+              "end_node": 100.0,
+              "extent_nodes": 0.6,
+              "p": 0.0035412951248030566,
+              "z_peak": 6.678,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_9>tr_1 99.4-100%ROM (p = 0.004)"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.217,
+          "fwhm": 23.41,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.225,
+          "fwhm": 23.14,
+          "clusters": [
+            {
+              "start": 99.1,
+              "end": 100.0,
+              "start_node": 99.1,
+              "end_node": 100.0,
+              "extent_nodes": 0.9,
+              "p": 0.003517193377608363,
+              "z_peak": 7.397,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_11>tr_1 99.1-100%ROM (p = 0.004)"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.287,
+          "fwhm": 20.99,
+          "clusters": [
+            {
+              "start": 72.6,
+              "end": 100.0,
+              "start_node": 72.6,
+              "end_node": 100.0,
+              "extent_nodes": 27.4,
+              "p": 4.0150327507149086e-11,
+              "z_peak": 7.573,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_12>tr_1 72.6-100%ROM (p <0.001)"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.368,
+          "fwhm": 18.53,
+          "clusters": [
+            {
+              "start": 42.9,
+              "end": 100.0,
+              "start_node": 42.9,
+              "end_node": 100.0,
+              "extent_nodes": 57.1,
+              "p": 0.0,
+              "z_peak": 7.3,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_13>tr_1 42.9-100%ROM (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.357,
+          "fwhm": 18.84,
+          "clusters": [
+            {
+              "start": 38.2,
+              "end": 100.0,
+              "start_node": 38.2,
+              "end_node": 100.0,
+              "extent_nodes": 61.8,
+              "p": 0.0,
+              "z_peak": 8.398,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_14>tr_1 38.2-100%ROM (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.631,
+          "fwhm": 17.56,
+          "clusters": [
+            {
+              "start": 30.3,
+              "end": 100.0,
+              "start_node": 30.3,
+              "end_node": 100.0,
+              "extent_nodes": 69.7,
+              "p": 0.0,
+              "z_peak": 8.031,
+              "direction": 1,
+              "unit": "%ROM"
+            }
+          ],
+          "summary": "tr_15>tr_1 30.3-100%ROM (p <0.001)"
+        }
+      },
+      "n_sig": 7,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_7",
+        "tr_9",
+        "tr_11",
+        "tr_12",
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_11",
+      "cluster_start_min": 30.3,
+      "cluster_start_max": 99.5,
+      "cluster_end_min": 100.0,
+      "cluster_end_max": 100.0
+    },
+    "IK_bonf_knee_angle": {
+      "per_session": {
+        "tr_2": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.909,
+          "fwhm": 19.31,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_3": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.774,
+          "fwhm": 24.34,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_4": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.783,
+          "fwhm": 23.96,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_5": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.642,
+          "fwhm": 30.86,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_6": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.591,
+          "fwhm": 33.93,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_7": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.662,
+          "fwhm": 29.78,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_8": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.656,
+          "fwhm": 30.07,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_9": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.601,
+          "fwhm": 33.3,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_10": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.606,
+          "fwhm": 33.01,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_11": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.614,
+          "fwhm": 32.52,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_12": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.582,
+          "fwhm": 34.56,
+          "clusters": [],
+          "summary": "no supra-threshold cluster"
+        },
+        "tr_13": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.762,
+          "fwhm": 24.88,
+          "clusters": [
+            {
+              "start": 55.9,
+              "end": 30.0,
+              "start_node": 24.1,
+              "end_node": 50.0,
+              "extent_nodes": 25.9,
+              "p": 2.6691743926221534e-07,
+              "z_peak": 5.433,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_13>tr_1 55.9-30deg (p <0.001)"
+        },
+        "tr_14": {
+          "n": 13,
+          "alpha": 0.0035714285714285718,
+          "tstar": 4.804,
+          "fwhm": 23.08,
+          "clusters": [
+            {
+              "start": 62.3,
+              "end": 30.0,
+              "start_node": 17.7,
+              "end_node": 50.0,
+              "extent_nodes": 32.3,
+              "p": 8.540457230310494e-11,
+              "z_peak": 7.087,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_14>tr_1 62.3-30deg (p <0.001)"
+        },
+        "tr_15": {
+          "n": 12,
+          "alpha": 0.0035714285714285718,
+          "tstar": 5.013,
+          "fwhm": 21.81,
+          "clusters": [
+            {
+              "start": 65.9,
+              "end": 30.0,
+              "start_node": 14.1,
+              "end_node": 50.0,
+              "extent_nodes": 35.9,
+              "p": 1.354472090042691e-14,
+              "z_peak": 7.374,
+              "direction": 1,
+              "unit": "deg"
+            }
+          ],
+          "summary": "tr_15>tr_1 65.9-30deg (p <0.001)"
+        }
+      },
+      "n_sig": 3,
+      "n_tested": 14,
+      "sig_sessions": [
+        "tr_13",
+        "tr_14",
+        "tr_15"
+      ],
+      "first_sustained": "tr_13",
+      "cluster_start_min": 55.9,
+      "cluster_start_max": 65.9,
+      "cluster_end_min": 30.0,
+      "cluster_end_max": 30.0
+    }
+  },
+  "matched_angle_values": {
+    "angles": [
+      80.0,
+      79.0,
+      78.0,
+      77.0,
+      76.0,
+      75.0,
+      74.0,
+      73.0,
+      72.0,
+      71.0,
+      70.0,
+      69.0,
+      68.0,
+      67.0,
+      66.0,
+      65.0,
+      64.0,
+      63.0,
+      62.0,
+      61.0,
+      60.0,
+      59.0,
+      58.0,
+      57.0,
+      56.0,
+      55.0,
+      54.0,
+      53.0,
+      52.0,
+      51.0,
+      50.0,
+      49.0,
+      48.0,
+      47.0,
+      46.0,
+      45.0,
+      44.0,
+      43.0,
+      42.0,
+      41.0,
+      40.0,
+      39.0,
+      38.0,
+      37.0,
+      36.0,
+      35.0,
+      34.0,
+      33.0,
+      32.0,
+      31.0,
+      30.0
+    ],
+    "torque": {
+      "NH": {
+        "mean": [
+          85.7014134398182,
+          91.47993416255466,
+          97.02291733547764,
+          102.30502606843628,
+          107.4778168130938,
+          112.5004516587528,
+          117.33230061521068,
+          121.98573433537733,
+          126.48733682713502,
+          130.85359461097366,
+          135.0769593631943,
+          139.08170849074736,
+          142.90785790894785,
+          146.54642781312157,
+          149.98398169878823,
+          153.21121225832457,
+          156.2963824368617,
+          159.2060184007593,
+          161.913118236836,
+          164.47172488786967,
+          166.82899634676258,
+          169.05130207140166,
+          171.13221201706557,
+          173.0870364913374,
+          174.86333784221577,
+          176.4468284000852,
+          177.8650810217361,
+          179.1407386418217,
+          180.26801605942777,
+          181.21399903445626,
+          181.99751183570217,
+          182.6467431652953,
+          183.1074000167281,
+          183.40679169924994,
+          183.55143955798323,
+          183.51617981722276,
+          183.31046326877276,
+          182.9457750550422,
+          182.41018013537328,
+          181.67994643088835,
+          180.78331858834196,
+          179.7182181860206,
+          178.48467372468667,
+          177.088716734049,
+          175.52519871526087,
+          173.80069983122135,
+          171.9393847168026,
+          169.94794041886155,
+          167.8360419968899,
+          165.60025475208116,
+          163.2582018660188
+        ],
+        "sd": [
+          23.111928883455683,
+          23.193726157189122,
+          23.30424651016928,
+          23.505790413246977,
+          23.73920047304084,
+          24.039319177768917,
+          24.312244143351496,
+          24.731478630804528,
+          25.295856303381672,
+          25.995136503348593,
+          26.896897944379035,
+          27.742066601334187,
+          28.586606090048328,
+          29.389719357714537,
+          30.18618403010068,
+          30.95947426557633,
+          31.73067914625487,
+          32.5116252624786,
+          33.20056301276797,
+          33.86481472934899,
+          34.52464280598862,
+          35.14264306439403,
+          35.75283441739134,
+          36.331125103203696,
+          36.82701203574234,
+          37.2288620165464,
+          37.52867474008955,
+          37.83714315124396,
+          38.13072452933253,
+          38.37779070937443,
+          38.58907722032457,
+          38.78124415575166,
+          38.86195783616148,
+          38.866233492774164,
+          38.85811431196989,
+          38.74883357608458,
+          38.596701885983066,
+          38.41834927308517,
+          38.164358558509534,
+          37.81468070603107,
+          37.407289754357876,
+          36.9487513750907,
+          36.424782586783415,
+          35.852003200982494,
+          35.22114892080083,
+          34.54092947173932,
+          33.822767789686715,
+          33.05268757694079,
+          32.24533190419079,
+          31.3948361970406,
+          30.4875452580397
+        ]
+      },
+      "IK": {
+        "mean": [
+          55.423870178036644,
+          57.44309644233853,
+          58.38677721657444,
+          60.12915729076166,
+          61.66181332723868,
+          62.725524005858695,
+          64.36727983675299,
+          66.12575236645104,
+          66.90523743690342,
+          68.4394951176706,
+          69.75617086437231,
+          70.65787175951924,
+          72.09542721253277,
+          73.69489299045583,
+          74.36357924020525,
+          75.63800157206053,
+          76.94097292516051,
+          77.67118741238446,
+          79.08383291582582,
+          80.58446454329173,
+          81.23847832073757,
+          82.48332322448168,
+          83.73644493058485,
+          84.46249876196258,
+          85.83987818361186,
+          87.32534330545164,
+          88.0370380414745,
+          89.16445466348942,
+          90.49221962619534,
+          91.16490820365368,
+          92.61720472386405,
+          94.10694390258605,
+          94.83555229360914,
+          95.96345213155986,
+          97.28790402504266,
+          97.98610621649823,
+          99.42062751426633,
+          100.97106451603084,
+          101.7810168536347,
+          102.9031652619693,
+          104.32072333364884,
+          104.99350768161722,
+          106.5270343614326,
+          108.05530991860063,
+          108.92015920381469,
+          110.04986320063422,
+          111.47688959745891,
+          112.2374974579564,
+          113.72788911163333,
+          115.28865201140187,
+          116.16617820768029
+        ],
+        "sd": [
+          14.109505600085019,
+          14.530845484204022,
+          14.9230060233786,
+          15.19586393437617,
+          15.59594476344781,
+          15.900098930969317,
+          16.14644973198136,
+          16.486817403123073,
+          16.75511126729933,
+          16.924021225562203,
+          17.192971336334068,
+          17.390193397358328,
+          17.531582206792113,
+          17.75813330192094,
+          17.926683992422582,
+          18.010097152032426,
+          18.203484754554307,
+          18.322774559293055,
+          18.407792304000424,
+          18.583723231189573,
+          18.722771018983913,
+          18.76822904960224,
+          18.90707124337661,
+          19.021363626982406,
+          19.134140448820393,
+          19.29554830274034,
+          19.457609343461556,
+          19.498898047634757,
+          19.624860991550868,
+          19.730324296520546,
+          19.836038997425764,
+          19.993677419682783,
+          20.126649499000308,
+          20.215762241878448,
+          20.34113167262087,
+          20.46406263973673,
+          20.590515465616853,
+          20.78921092658348,
+          20.949997995393836,
+          21.062228224560084,
+          21.232383120785826,
+          21.350725607301197,
+          21.50031381426092,
+          21.694437101587383,
+          21.87290783831195,
+          21.997149314411477,
+          22.177853206447093,
+          22.347177922391506,
+          22.540216875404962,
+          22.772874485805435,
+          22.994858910232843
+        ]
+      },
+      "difference": [
+        30.277543261781553,
+        34.03683772021613,
+        38.63614011890321,
+        42.175868777674616,
+        45.81600348585511,
+        49.7749276528941,
+        52.9650207784577,
+        55.85998196892629,
+        59.582099390231605,
+        62.414099493303056,
+        65.320788498822,
+        68.42383673122812,
+        70.81243069641508,
+        72.85153482266574,
+        75.62040245858297,
+        77.57321068626403,
+        79.3554095117012,
+        81.53483098837484,
+        82.82928532101018,
+        83.88726034457794,
+        85.59051802602501,
+        86.56797884691998,
+        87.39576708648072,
+        88.62453772937481,
+        89.02345965860391,
+        89.12148509463356,
+        89.8280429802616,
+        89.97628397833229,
+        89.77579643323243,
+        90.04909083080258,
+        89.38030711183812,
+        88.53979926270925,
+        88.27184772311895,
+        87.44333956769007,
+        86.26353553294057,
+        85.53007360072453,
+        83.88983575450644,
+        81.97471053901135,
+        80.62916328173858,
+        78.77678116891904,
+        76.46259525469311,
+        74.72471050440339,
+        71.95763936325407,
+        69.03340681544837,
+        66.60503951144618,
+        63.75083663058713,
+        60.4624951193437,
+        57.710442960905155,
+        54.10815288525656,
+        50.31160274067929,
+        47.092023658338505
+      ]
+    },
+    "velocity": {
+      "NH": {
+        "mean": [
+          14.072581990210114,
+          14.38864792795895,
+          14.809699831575553,
+          15.083633598501432,
+          15.447896593673468,
+          15.94711405939941,
+          16.58716329886904,
+          17.22092739528611,
+          17.973502799388946,
+          18.74767430284854,
+          19.588676679685157,
+          20.568154931392957,
+          21.56460820434857,
+          22.689088936489682,
+          23.934915164286508,
+          25.1546424591769,
+          26.40070985446887,
+          27.73229519257317,
+          29.11729539799039,
+          30.62931583811168,
+          32.192530658210366,
+          33.718973196627616,
+          35.38988602271625,
+          37.123696449317535,
+          38.889251646275255,
+          40.69621958500359,
+          42.579487467624645,
+          44.55881210981277,
+          46.56397560647509,
+          48.613011588857894,
+          50.643592855274846,
+          52.74353385918171,
+          54.91251868248216,
+          57.07665207957015,
+          59.25682960050198,
+          61.48539600005513,
+          63.74656810686634,
+          66.02957990654782,
+          68.35574040407636,
+          70.73450382341602,
+          73.12875112905414,
+          75.5551237138013,
+          78.00745615372664,
+          80.4948410090217,
+          83.03287246234598,
+          85.61780610325076,
+          88.22731173480861,
+          90.87334336714834,
+          93.57057929479836,
+          96.35037152814292,
+          99.20782844655902
+        ],
+        "sd": [
+          2.7170664380128025,
+          2.6131894848659907,
+          2.6053432807690258,
+          2.5085402130071968,
+          2.5955855429953942,
+          2.6773580387678155,
+          2.7387784083427777,
+          2.956117093743043,
+          3.185779833559127,
+          3.4265318747400415,
+          3.7282074397941884,
+          4.020162780752812,
+          4.318390009489248,
+          4.651080294859854,
+          5.019483697639104,
+          5.388949999532167,
+          5.772915224915679,
+          6.202235872975754,
+          6.546393503353594,
+          6.879057742010948,
+          7.301206779730218,
+          7.76396278803498,
+          8.110292852737679,
+          8.484333841005563,
+          8.862199006747609,
+          9.2308286657924,
+          9.626294101861081,
+          9.990058212838527,
+          10.400136758680128,
+          10.776298514887566,
+          11.18725589425551,
+          11.587569737758809,
+          11.923913733665172,
+          12.246576152629133,
+          12.588530932796484,
+          12.931556691938855,
+          13.257040039768544,
+          13.56396379015706,
+          13.83655737233257,
+          14.017206624102574,
+          14.140315313228173,
+          14.235227407966322,
+          14.304911120310564,
+          14.340510047442443,
+          14.367448100624115,
+          14.38276253536277,
+          14.408781145234808,
+          14.432718460739135,
+          14.463780442484163,
+          14.490294592442481,
+          14.506417839531606
+        ]
+      },
+      "IK": {
+        "mean": [
+          23.000442215405652,
+          23.161562717326678,
+          23.29769541898492,
+          23.3849054777401,
+          23.454689741598248,
+          23.503573017816958,
+          23.538004045558278,
+          23.560801716426997,
+          23.59494361881219,
+          23.608136218381052,
+          23.627176970850652,
+          23.633409369483186,
+          23.634234616324495,
+          23.631901246911063,
+          23.645749062144308,
+          23.65333336056747,
+          23.654187059147255,
+          23.655978007200332,
+          23.647088621699805,
+          23.641038720846886,
+          23.649818217632543,
+          23.658482428514038,
+          23.65837089836031,
+          23.65826824010544,
+          23.650768227029733,
+          23.650957129002926,
+          23.65436915535125,
+          23.66375830797555,
+          23.65778981805272,
+          23.660940005124342,
+          23.651527425977974,
+          23.6485910745695,
+          23.64984943093739,
+          23.66056031182035,
+          23.65920438696848,
+          23.661056821662566,
+          23.652648248749355,
+          23.65176275996956,
+          23.650362357013282,
+          23.66721560411533,
+          23.661640086963665,
+          23.662027831524625,
+          23.64875560464481,
+          23.65179825246508,
+          23.650201605114493,
+          23.6659118476087,
+          23.659707524251303,
+          23.658725634251592,
+          23.649830500772044,
+          23.652509764714864,
+          23.647269076242175
+        ],
+        "sd": [
+          0.1868938277479202,
+          0.17769102076184998,
+          0.17117953583973972,
+          0.16943076487138842,
+          0.1687414063973281,
+          0.16800023833515587,
+          0.16784221483793244,
+          0.16854312065458008,
+          0.16776347714153797,
+          0.16783841531249502,
+          0.16648323183097682,
+          0.16472543056871025,
+          0.1647202740013698,
+          0.1687245675577383,
+          0.16856356525340024,
+          0.16783252771402954,
+          0.1698350429556277,
+          0.17098293877213372,
+          0.1743297696498391,
+          0.17503056882762663,
+          0.17515358617112697,
+          0.171787826042156,
+          0.16918149588698295,
+          0.1656655887007052,
+          0.16743699691855957,
+          0.16826566946936802,
+          0.16936249790081453,
+          0.17023297962411504,
+          0.1682226515545909,
+          0.16261688344753164,
+          0.15954415353111373,
+          0.15837106365689158,
+          0.1663389246975774,
+          0.17017590768987237,
+          0.1698856729022995,
+          0.1688131559308801,
+          0.16925194405570795,
+          0.1696555928206901,
+          0.1704295252072822,
+          0.1694906240451711,
+          0.16970577201652448,
+          0.16847647086630102,
+          0.16955939657702185,
+          0.1710452021285191,
+          0.17261837861362606,
+          0.17053122462052253,
+          0.1699828926068269,
+          0.1713961815371151,
+          0.17349783516573788,
+          0.17256178020780605,
+          0.17274667986995068
+        ]
+      },
+      "difference": [
+        -8.927860225195538,
+        -8.772914789367729,
+        -8.487995587409365,
+        -8.30127187923867,
+        -8.00679314792478,
+        -7.556458958417547,
+        -6.950840746689238,
+        -6.339874321140886,
+        -5.6214408194232455,
+        -4.860461915532511,
+        -4.038500291165494,
+        -3.0652544380902285,
+        -2.069626411975925,
+        -0.942812310421381,
+        0.2891661021422003,
+        1.501309098609429,
+        2.746522795321617,
+        4.076317185372837,
+        5.470206776290585,
+        6.9882771172647935,
+        8.542712440577823,
+        10.060490768113578,
+        11.731515124355937,
+        13.465428209212096,
+        15.238483419245522,
+        17.045262456000664,
+        18.925118312273394,
+        20.89505380183722,
+        22.90618578842237,
+        24.952071583733552,
+        26.992065429296872,
+        29.09494278461221,
+        31.262669251544768,
+        33.416091767749805,
+        35.597625213533505,
+        37.82433917839256,
+        40.09391985811699,
+        42.377817146578266,
+        44.70537804706308,
+        47.06728821930069,
+        49.46711104209047,
+        51.89309588227667,
+        54.35870054908183,
+        56.84304275655661,
+        59.38267085723149,
+        61.95189425564206,
+        64.5676042105573,
+        67.21461773289674,
+        69.92074879402632,
+        72.69786176342805,
+        75.56055937031684
+      ]
+    }
+  }
+}
