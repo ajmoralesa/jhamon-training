@@ -237,7 +237,7 @@ def damedata(session):
     import numpy as np
     from scipy import signal
 
-    from jhamon.signal.filters import butter_low_filter
+    from jhamon_training.signal.filters import butter_low_filter
 
     session_data = dict()
     for jj in range(len(session)):
@@ -310,7 +310,7 @@ def damedata(session):
         DATA = np.column_stack((time, mech_resampled, markers_filt))
 
         # Segmentate repetitions
-        from jhamon.signal.mech import _detect_onset
+        from jhamon_training.signal.mech import _detect_onset
 
         force_threshold = DATA[:, 2].max() * 0.4
         dins = _detect_onset(
@@ -482,9 +482,9 @@ def analizame_curvas(session_data, pesocorporal, participant, tr_session):
 
     import numpy as np
     import pandas as pd
-    from jhamon.signal.nordic import dame_inercia
-    from jhamon.signal.filters import butter_low_filter
-    from jhamon.signal.mech import _detect_onset
+    from jhamon_training.signal.nordic import dame_inercia
+    from jhamon_training.signal.filters import butter_low_filter
+    from jhamon_training.signal.mech import _detect_onset
     from jhamon_training.kinematics import (
         calculate_knee_velocity,
         calculate_hip_velocity,

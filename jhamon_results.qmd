@@ -1,5 +1,6 @@
 ---
-title: "Jhamon Results"
+title: "Mechanical work standardization of Nordic versus isokinetic hamstring eccentric training"
+subtitle: "Statistical analyses and Results"
 format:
   docx:
     toc: true
@@ -10,56 +11,696 @@ format:
 
 ```{python}
 # | echo: false
+# All reported values are read from training_stats.json, which is regenerated
+# end to end by:
+#     python reproduce.py                  # descriptives, mixed models, agreement
+#     python extract_manuscript_stats.py   # SPM, progression, baseline, counts
+#     python extract_validity_stats.py     # velocity phase, agreement by dataset
+#     python extract_stats_addendum.py     # Welch df, terminal contrasts
+# No number below is typed by hand. If a value is not in the JSON it does not
+# appear in the text.
 import json
+
 from jhamon_training.pathutils import RESULTS_TRAINING_PATH
 
-# Load the statistics from the JSON file
-stats_path = RESULTS_TRAINING_PATH / "training_stats.json"
-with open(stats_path) as f:
-    stats = json.load(f)
+with open(RESULTS_TRAINING_PATH / "training_stats.json") as f:
+    S = json.load(f)
+with open(RESULTS_TRAINING_PATH / "manuscript_stats_detail.json") as f:
+    D = json.load(f)
 
-# Round specific ANOVA values to 1 decimal point
-stats["anova_peak_torque_group_f"] = round(stats["anova_peak_torque_group_f"], 1)
-stats["anova_knee_ROM_group_f"] = round(stats["anova_knee_ROM_group_f"], 1)
+
+def p(key, *, eq=True):
+    """Format a p value: '< 0.001' below that, otherwise three decimals."""
+    v = float(S[key]) if isinstance(key, str) else float(key)
+    if v < 0.001:
+        return "*p* < 0.001" if eq else "< 0.001"
+    return f"*p* = {v:.3f}" if eq else f"= {v:.3f}"
+
+
+def pv(v):
+    """Same, for a raw number rather than a key."""
+    return "< 0.001" if float(v) < 0.001 else f"= {float(v):.3f}"
+
+
+def ms(mean_key, sd_key, nd=1):
+    return f"{S[mean_key]:.{nd}f} ± {S[sd_key]:.{nd}f}"
+
+
+def sg(key, nd=2):
+    """Signed value, with negative zero normalised so it never prints '-0.00'."""
+    v = float(S[key]) if isinstance(key, str) else float(key)
+    if abs(v) < 0.5 * 10**-nd:
+        v = 0.0
+    return f"{v:+.{nd}f}"
+
+
+def ci(low_key, high_key, nd=2, sign=False):
+    lo, hi = S[low_key], S[high_key]
+    fmt = f"+.{nd}f" if sign else f".{nd}f"
+    return f"{lo:{fmt}}, {hi:{fmt}}"
+
+
+def cluster(prefix, n):
+    """One SPM cluster as 'start–end%' plus its cluster-level p."""
+    lo, hi = S[f"{prefix}_c{n}_start"], S[f"{prefix}_c{n}_end"]
+    return f"{lo:.1f}–{hi:.1f}%", pv(S[f"{prefix}_c{n}_p"])
+
+
+# Data completeness. All participants completed all 15 sessions; the missing
+# cells are recordings that were not captured or retained (technical failure
+# during acquisition), NOT missed training sessions.
+n_par = S["lmm_n_participants"]
+n_cells = S["lmm_n_cells"]
+n_possible = n_par * 15
+n_missing = n_possible - n_cells
+pct_complete = f"{100 * n_cells / n_possible:.0f}"
+
+# Verified 2026-07-27 by rebuilding the (par x session) grid from the caches.
+n_missing_nh, n_missing_ik = 10, 2   # missing recordings, per group
+n_affected = 9                       # participants with >=1 missing recording
+n_complete_case = 18                 # what a complete-case ANOVA would retain
+
+# The five discrete outcomes, in the order they are reported.
+DVS = [
+    ("angle_at_peak_torque", "knee angle at peak torque", "°", 1),
+    ("peak_torque", "peak torque", "N·m", 1),
+    ("mean_torque", "mean torque", "N·m", 1),
+    ("knee_ROM", "knee range of motion", "°", 1),
+    ("knee_v_mean", "mean knee angular velocity", "°/s", 1),
+]
+d = {}
+for dv, _label, _unit, nd in DVS:
+    d[f"{dv}_nh"] = ms(f"lmm_{dv}_desc_nh_mean", f"lmm_{dv}_desc_nh_sd", nd)
+    d[f"{dv}_ik"] = ms(f"lmm_{dv}_desc_ik_mean", f"lmm_{dv}_desc_ik_sd", nd)
+    d[f"{dv}_est"] = f'{S[f"lmm_{dv}_nhmik_est"]:+.2f}'
+    d[f"{dv}_ci"] = ci(f"lmmt_{dv}_ci_low", f"lmmt_{dv}_ci_high", sign=True)
+    d[f"{dv}_t"] = f'{S[f"lmmt_{dv}_t"]:.2f}'
+    d[f"{dv}_p"] = pv(S[f"lmmt_{dv}_p"])
+    for eff in ["group", "time", "interaction"]:
+        d[f"{dv}_{eff}_chi2"] = f'{S[f"lmm_{dv}_{eff}_chi2"]:.1f}'
+        d[f"{dv}_{eff}_df"] = S[f"lmm_{dv}_{eff}_df"]
+        d[f"{dv}_{eff}_p"] = pv(S[f"lmm_{dv}_{eff}_p"])
 ```
 
+# Statistical analysis
 
-The total number of repetitions analysed was `{python} stats["total_reps"]`, with `{python} stats["nh_reps"]` repetitions from the NH group (`{python} stats["nh_percentage"]`% of the total `{python} stats["prescribed_total_nh"]` prescribed repetitions in the training program) and `{python} stats["ik_reps"]` repetitions from the IK group. On average, participants in the IK group performed `{python} stats["rep_diff"]` ± `{python} stats["rep_diff_sd"]` repetitions `{python} stats["rep_diff_sign"]` per set than the NH group. This difference increased from `{python} stats["tr1_avg_diff"]` ± `{python} stats["tr1_avg_diff_sd"]` repetitions in the first training session to `{python} stats["tr15_avg_diff"]` ± `{python} stats["tr15_avg_diff_sd"]` at the fifteenth IK training session (Figure 3A).
+## Software and reporting conventions
 
-The amount of work per repetition was greater in the NH group compared to the IK group (`{python} stats["nh_work_mean"]` ± `{python} stats["nh_work_sd"]` J vs `{python} stats["ik_work_mean"]` ± `{python} stats["ik_work_sd"]` J; *p* < 0.001; Figure 3B). Nevertheless, the total amount of work per set was similar between the two groups (Figure 3C). 
+All analyses were performed in Python 3.9.6. Descriptive statistics, agreement
+analyses and *t*-tests used SciPy 1.13.1 (Virtanen et al., 2020); linear mixed
+models used `statsmodels` 0.14.6 (Seabold & Perktold, 2010); one-dimensional
+statistical parametric mapping used `spm1d` 0.4.53 (Pataky, 2012); descriptive
+summaries used `pingouin` 0.5.5 (Vallat, 2018). Descriptive data are presented
+as mean ± standard deviation (SD), with the unit of analysis stated in each
+case, and model effects as the estimate with its 95% confidence interval (CI).
+The significance level was set at α = 0.05. All code and the complete set of
+reported statistics are archived with the manuscript, and every value reported
+below is regenerated from the archived data by a single documented command.
 
+## Analysed data and data reduction
 
-Mean and peak torque, knee ROM, the angle at peak torque, and knee velocity values across training sessions are shown in Figure 4. Higher peak torque values were observed in the NH group compared to the IK group (`{python} stats["anova_peak_torque_group_mean"]["NH"]` ± `{python} stats["anova_peak_torque_group_sd"]["NH"]` Nm vs `{python} stats["anova_peak_torque_group_mean"]["IK"]` ± `{python} stats["anova_peak_torque_group_sd"]["IK"]` Nm; *F* = `{python} stats["anova_peak_torque_group_f"]`, *p* = `{python} stats["anova_peak_torque_group_p"]`). No main effect of training group was observed for mean torque (*F* = `{python} stats["anova_mean_torque_group_f"]`, *p* = `{python} stats["anova_mean_torque_group_p"]`) or knee ROM (*F* = `{python} stats["anova_knee_ROM_group_f"]`, *p* = `{python} stats["anova_knee_ROM_group_p"]`). However, a significant main effect of group was observed for knee angle at peak torque (`{python} stats["anova_angle_at_peak_torque_group_mean"]["NH"]` ± `{python} stats["anova_angle_at_peak_torque_group_sd"]["NH"]`° vs `{python} stats["anova_angle_at_peak_torque_group_mean"]["IK"]` ± `{python} stats["anova_angle_at_peak_torque_group_sd"]["IK"]`°; *F* = `{python} stats["anova_angle_at_peak_torque_group_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_angle_at_peak_torque_group_eta"]`). A significant main effect of time was observed for mean torque (*F* = `{python} stats["anova_mean_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_mean_torque_time_eta"]`), peak torque (*F* = `{python} stats["anova_peak_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_peak_torque_time_eta"]`), knee ROM (*F* = `{python} stats["anova_knee_ROM_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_knee_ROM_time_eta"]`), and angle at peak torque (*F* = `{python} stats["anova_angle_at_peak_torque_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_angle_at_peak_torque_time_eta"]`).
+Two nested populations of repetitions are distinguished throughout, because
+they answer different questions and are not interchangeable.
 
-A significant main effect of group was also observed for mean knee velocity (`{python} stats["anova_knee_v_mean_group_mean"]["NH"]` ± `{python} stats["anova_knee_v_mean_group_sd"]["NH"]`°/s vs `{python} stats["anova_knee_v_mean_group_mean"]["IK"]` ± `{python} stats["anova_knee_v_mean_group_sd"]["IK"]`°/s; *F* = `{python} stats["anova_knee_v_mean_group_f"]`, *p* = `{python} stats["anova_knee_v_mean_group_p"]`, $\eta^2$ = `{python} stats["anova_knee_v_mean_group_eta"]`), with higher values in the NH group. A significant main effect of time was also observed for mean knee velocity (*F* = `{python} stats["anova_knee_v_mean_time_f"]`, *p* < 0.001, $\eta^2$ = `{python} stats["anova_knee_v_mean_time_eta"]`).
+*All repetitions performed* comprises every repetition recorded during the
+intervention (`{python} S["reps_all_total"]` repetitions;
+`{python} S["reps_all_nh"]` NH in `{python} S["reps_all_nh_sets"]` sets and
+`{python} S["reps_all_ik"]` IK in `{python} S["reps_all_ik_sets"]` sets). This
+is the population the standardization procedure actually targeted, since the
+cumulative work criterion that terminated each isokinetic set was applied to
+every repetition performed, and it is therefore the population used for the
+descriptive summaries and for the agreement analyses that evaluate the
+standardization.
 
-SPM analyses on the normalized torque and velocity patterns are shown in Figure 5. In the beginning of the contraction, greater knee joint torque values were observed in the IK group compared to the NH group (0-37%). Greater torque calues were observed in the NH group in the last half of the movement (supra threshold cluster from 48% to 100%). Different patterns were also observed in the knee velocity data, with greater knee angular velocity values in the IK group during the three first quarters of the movement (0.9-73%, CT = 2.729) and the opposite pattern in the last quarter of the movement, with greater knee angular velocity values in the NH group (Figure 5C and 5D).
+*Analysed repetitions* comprises `{python} S["reps_analysed_total"]`
+repetitions remaining after three exclusions: (i) sets that were not part of
+the matched prescription grid, (ii) individual participant–session–set
+recordings identified as technically invalid during data collection, and (iii)
+a quality-control window retaining only repetitions with a mean knee angular
+velocity between 10 and 35 °·s^-1^.
 
-Progression of the normalized torque and velocity patterns across training sessions is shown in Figure 6.
+Criterion (iii) filters on a variable that is also a reported outcome, and its
+effect is not symmetric between groups, so it is quantified here rather than
+asserted to be harmless. Applied after criteria (i) and (ii), which are protocol
+facts known independently of any measurement, it removed
+`{python} S["qc_nh_fast"] + S["qc_nh_slow"]`
+of `{python} S["qc_nh_n"]` NH repetitions
+(`{python} f'{S["qc_nh_removed_pct"]:.1f}'`%), of which
+`{python} S["qc_nh_fast"]` came from the fast tail at speeds not physiologically
+attainable during a Nordic descent and `{python} S["qc_nh_slow"]` from the slow
+tail; and `{python} S["qc_ik_fast"] + S["qc_ik_slow"]` of
+`{python} S["qc_ik_n"]` IK repetitions
+(`{python} f'{S["qc_ik_removed_pct"]:.1f}'`%), all from the slow tail, since an
+isokinetic movement cannot exceed its programmed speed. Trimming the Nordic fast
+tail and the isokinetic slow tail moves the two group means towards each other
+(NH `{python} sg("qc_nh_mean_shift")` °·s^-1^, IK
+`{python} sg("qc_ik_mean_shift")` °·s^-1^; NH − IK gap
+`{python} f'{S["qc_gap_before"]:.2f}'` → `{python} f'{S["qc_gap_after"]:.2f}'`
+°·s^-1^) and is therefore **anti-conservative** for a claim that the two
+modalities were velocity-matched. The agreement analyses that evaluate the
+standardization are accordingly reported on all repetitions performed, with the
+analysed subset given as a sensitivity analysis.
 
-Bland-Altman plots are shown in Figure 7.
+The three analyses draw on different populations, which is stated here because
+no single repetition count describes them all. The between-modality whole-curve
+comparison used all `{python} S["reps_all_total"]` recorded repetitions,
+averaged to one curve per participant. The mixed models and the
+session-by-session whole-curve comparisons used the three repetitions of highest
+peak torque in each participant × session cell.
 
+For the discrete outcomes, the three repetitions with the highest peak torque
+within each participant and training session were averaged, yielding one value
+per participant × session combination. The selection criterion is peak torque
+and the pool from which those three repetitions are drawn grows across the
+programme as sets and repetitions are added; both are stated here because the
+mean of an extreme order statistic increases with pool size, and this
+contributes to, without accounting for, the observed time effects.
 
+## Baseline comparison
 
+Pre-intervention maximal voluntary isometric knee-flexion torque — the quantity
+by which the isokinetic work prescription was individually scaled in Equation 1
+— was compared between groups with an independent-samples Welch *t*-test, with
+Hedges' *g* as the effect size. Participants completed one to three
+familiarisation sessions; the highest value across a participant's sessions was
+used, and the conclusion was verified to be unchanged under a mean-across-
+sessions and a last-session rule. One NH participant lacked a usable passive
+trial for gravity correction and is therefore excluded from this comparison
+only (NH *n* = `{python} S["mvif_max_nh_n"]`, IK *n* =
+`{python} S["mvif_max_ik_n"]`); all `{python} n_par` participants contribute to
+the mixed models and the between-modality whole-curve comparison. The
+session-by-session progression comparisons are paired and therefore use only
+participants with both sessions recorded (9–13 per contrast).
 
+## Whole-curve analysis of the mechanical patterns
 
+Torque and knee angular velocity were time-normalised to 101 points across the
+eccentric phase of each repetition and compared between modalities using
+one-dimensional statistical parametric mapping (SPM1D; Pataky, 2012). Curves
+are expressed as a percentage of the repetition rather than of knee angle;
+because the two modalities traverse a comparable total range of motion but at
+different instantaneous rates, matched percentages do not correspond to
+identical knee angles, and the corresponding angular ranges are reported
+alongside each result.
 
+Between-modality differences were tested with a two-sample SPM{*t*} statistic
+computed on **one curve per participant** (`{python} S["spm_torque_paravg_n_nh"]`
+NH versus `{python} S["spm_torque_paravg_n_ik"]` IK), obtained by averaging each
+participant's repetitions across all sessions. This unit of analysis is stated
+explicitly because averaging within participant is what makes the observations
+independent: treating each participant × session curve as a separate
+observation would inflate the residual degrees of freedom approximately
+fifteen-fold.
 
+Within-group changes across the intervention were tested by comparing each
+subsequent session against the first with a paired SPM{*t*} statistic (14
+comparisons per group). For each test the critical threshold *t*\* was defined
+using random field theory, which controls the family-wise error rate across the
+101 points of a single curve but not across the 14 session comparisons; the
+per-comparison α was therefore Bonferroni-corrected to
+`{python} f'{S["prog_alpha_bonferroni"]:.4f}'` (0.05/`{python} S["prog_n_comparisons"]`).
+Because that correction is conservative for a family of positively correlated,
+time-ordered contrasts sharing a common reference session, the uncorrected
+results are also reported. Supra-threshold clusters and their cluster-level
+probabilities are reported for every test.
 
+## Repetitions and mechanical work
 
+The number of repetitions performed per set and the mechanical work performed
+per repetition were compared between modalities with independent-samples Welch
+*t*-tests, with Hedges' *g* as the effect size. In both cases the unit of
+analysis is the participant: each participant contributed a single mean, and
+the tests were computed on `{python} S["workrep_nh_n"]` NH and
+`{python} S["workrep_ik_n"]` IK values. Repetition-level tests on the full set
+of `{python} S["reps_all_total"]` repetitions are not reported, because
+repetitions within a participant are not independent observations. Repetition
+counts are compared as achieved-versus-achieved; comparisons of achieved
+isokinetic counts against the prescribed Nordic count are not reported, since
+the NH group completed 92% of the prescription and such a comparison
+understates the difference.
 
+## Validity of the work- and velocity-standardization
 
+The validity of the standardization was evaluated with Bland–Altman analyses of
+the two quantities the procedure equated: total mechanical work per set, and
+mean angular velocity.
 
+Because NH and IK were **between-participant** groups, there is no
+participant-to-participant correspondence and a conventional paired
+Bland–Altman analysis on individual data would be meaningless. What the
+procedure paired was the *prescription*: the target work for a given set of a
+given session was derived from the NH group mean for that same session × set
+cell, and the dynamometer velocity for that cell was programmed to the NH group
+mean for that cell. The unit of analysis is therefore the **session × set
+cell**, of which there are `{python} S["bav_all_work_n_pairs"]` complete pairs,
+each comparing the NH group mean against the IK group mean for the same cell,
+with the difference taken as NH − IK. For work, repetitions were summed within
+participant and then averaged across the participants of the group; for
+velocity, the mean was taken across all repetitions in the cell.
 
+For each quantity we report the mean bias with its 95% CI, the 95% limits of
+agreement (bias ± 1.96 SD of the differences) with their CIs, the bias as a
+percentage of the grand mean, Lin's concordance correlation coefficient (CCC)
+with its CI, a test for proportional bias (ordinary least-squares regression of
+the difference on the mean), and a Shapiro–Wilk test of the differences. Where
+proportional bias was significant, regression-based limits of agreement are
+reported alongside the fixed limits. Two distinct confidence intervals are
+reported and are not interchangeable: the cell-level interval describes how
+reproducibly the standardization hit its target from one session × set cell to
+the next, whereas the between-group difference and its interval are computed
+with the **participant** as the unit of analysis and are the appropriate basis
+for any statement about the two groups. Equivalence is not argued from a
+non-significant test; it is argued from the magnitude of the bias relative to
+the measured quantity, together with the limits of agreement.
 
+The velocity comparison requires one further definition, and it is deliberately
+**asymmetric between the two modalities**, so it is set out in full here.
 
+What the procedure prescribed was a single constant angular velocity per set,
+equal to the Nordic group's mean angular velocity over the whole range of motion
+for that set. Evaluating whether that prescription was met therefore means
+comparing the Nordic whole-range mean — the quantity that defined the target —
+against the constant velocity the dynamometer actually delivered. The
+dynamometer necessarily accelerates the limb from rest at the start of the range
+of motion and decelerates it to rest at the end, and both ramps fall inside the
+recorded repetition; they are properties of the apparatus and were not part of
+the prescription. Isokinetic velocity was accordingly quantified over the
+**constant-velocity phase**, defined as the samples whose absolute angular
+velocity reached at least 95% of that repetition's peak. Across the
+`{python} S["velphase_n_reps"]` isokinetic repetitions this phase spanned the
+median interval
+`{python} f'{S["velphase_start_pct_median"]:.0f}'`–`{python} f'{S["velphase_end_pct_median"]:.0f}'`%
+of the repetition, and including the two ramps lowered the mean velocity from
+`{python} f'{S["velphase_ik_plateau_mean"]:.2f}'` to
+`{python} f'{S["velphase_ik_window_mean"]:.2f}'` °·s^-1^
+(`{python} f'{S["velphase_ramp_cost_pct"]:.0f}'`%). The value is insensitive to
+the threshold (`{python} f'{S["velphase_p90_mean"]:.2f}'`,
+`{python} f'{S["velphase_ik_plateau_mean"]:.2f}'` and
+`{python} f'{S["velphase_p98_mean"]:.2f}'` °·s^-1^ at 90%, 95% and 98% of peak
+respectively, and `{python} f'{S["velphase_ik_mid_mean"]:.2f}'` °·s^-1^ over a
+fixed 25–75% window).
 
+No equivalent trimming was applied to the Nordic repetitions, and the reason is
+empirical rather than conventional: a Nordic descent has no constant-velocity
+phase to isolate. Applying the identical 95%-of-peak rule to the Nordic curves
+selects a median of `{python} S["velphase_nh_p95_width_median"]` of the 101
+sample points and returns `{python} f'{S["velphase_nh_p95_mean"]:.1f}'` °·s^-1^,
+because the Nordic profile accelerates monotonically to the end of its window
+rather than plateauing; a fixed 25–75% window returns
+`{python} f'{S["velphase_nh_mid2575_mean"]:.2f}'` °·s^-1^, which measures a
+different part of an accelerating ramp than the same window measures in the
+isokinetic group. Neither is a like-for-like quantity, whereas the Nordic
+whole-range mean is precisely the quantity the isokinetic target was derived
+from. The comparison reported below is therefore between the Nordic whole-range
+mean and the isokinetic constant-velocity phase, and it should be read as a test
+of whether the prescribed velocity was delivered — not as a claim that the two
+modalities imposed equivalent velocity profiles, which the whole-curve analysis
+shows they did not. The isokinetic whole-window value is reported alongside so
+that the effect of this choice is explicit.
 
+## Discrete outcomes across training sessions
 
+Mechanical data were unavailable for `{python} n_missing` of the
+`{python} n_possible` participant × session combinations owing to technical
+failures during data acquisition. A conventional repeated-measures analysis of
+variance would have excluded the `{python} n_affected` affected participants
+listwise and reduced the sample from `{python} n_par` to
+`{python} n_complete_case`. Data were therefore analysed with linear mixed
+models, which accommodate unbalanced designs and use all available observations
+(Cnaan et al., 1997; Gueorguieva & Krystal, 2004), retaining all
+`{python} n_par` participants. Missingness was concentrated in the NH group
+(`{python} n_missing_nh` of 195 NH cells versus `{python} n_missing_ik` of 210
+IK cells), consistent with the heavier NH instrumentation, and was unrelated to
+the measured outcomes; because training group is a fixed effect in every model,
+the data are treated as missing at random.
 
+Each outcome was modelled with training group (NH, IK), training session (15
+levels, treated as a categorical factor) and their interaction as fixed effects,
+and a random intercept for participant. Sum-to-zero contrast coding was used so
+that the group and session tests represent main effects averaged over the levels
+of the other factor. Models were fitted by restricted maximum likelihood, and
+main effects and the interaction were tested with omnibus Wald chi-square tests.
+The between-group effect is reported as the estimated marginal difference
+(NH − IK), averaged equally across training sessions, with a 95% CI based on the
+*t* distribution with `{python} S["lmmt_df"]` degrees of freedom, that being the
+number of participants minus two rather than the number of observations. Two
+limitations of this specification are acknowledged: the omnibus Wald tests are
+asymptotic and are referred to a chi-square distribution, which is
+anti-conservative for the between-participant group effect at this sample size;
+and a single residual and a single random-intercept variance are estimated for
+both groups, although the isokinetic constraint makes the between-participant
+variance in velocity and range of motion substantially smaller in the IK group.
 
+# Results
 
+## Participants and data yield
 
+All `{python} n_par` participants (`{python} S["lmm_n_nh"]` NH,
+`{python} S["lmm_n_ik"]` IK) completed the full 15-session training programme.
+Mechanical data were successfully recorded for `{python} n_cells` of the
+`{python} n_possible` participant × session combinations
+(`{python} pct_complete`%); the `{python} n_missing` missing recordings were due
+to technical failures during data acquisition (`{python} n_missing_nh` NH,
+`{python} n_missing_ik` IK), affecting `{python} n_affected` participants.
 
+The two groups did not differ at baseline in maximal voluntary isometric
+knee-flexion torque (NH `{python} ms("mvif_max_nh_mean", "mvif_max_nh_sd")` N·m,
+*n* = `{python} S["mvif_max_nh_n"]`; IK
+`{python} ms("mvif_max_ik_mean", "mvif_max_ik_sd")` N·m, *n* =
+`{python} S["mvif_max_ik_n"]`; *t* = `{python} f'{S["mvif_max_t"]:.2f}'`,
+*p* = `{python} f'{S["mvif_max_p"]:.3f}'`, *g* =
+`{python} f'{S["mvif_max_g"]:.2f}'`), which is the condition under which the
+group-mean scaling of Equation 1 is appropriate. The same conclusion was
+obtained using the mean across familiarisation sessions
+(*p* = `{python} f'{S["mvif_mean_p"]:.3f}'`) or the last session
+(*p* = `{python} f'{S["mvif_last_p"]:.3f}'`).
 
+A total of `{python} S["reps_all_total"]` repetitions were recorded
+(`{python} S["reps_all_nh"]` NH, `{python} S["reps_all_ik"]` IK), of which
+`{python} S["reps_analysed_total"]` entered the whole-curve and mixed-model
+analyses.
 
+## Effect of training modality on the mechanical patterns
+
+The two modalities loaded the knee in opposite regions of the range of motion
+(Figure 3). Between-group SPM{*t*} analysis of the torque curves
+(*t*\*(`{python} f'{S["spm_torque_paravg_df"]:.1f}'`) =
+`{python} f'{S["spm_torque_paravg_tstar"]:.3f}'`) identified two
+supra-threshold clusters. Isokinetic torque exceeded Nordic torque over the
+first `{python} f'{S["spm_torque_paravg_c1_end"]:.1f}'`% of the repetition
+(`{python} cluster("spm_torque_paravg", 1)[0]`, cluster-level
+*p* `{python} cluster("spm_torque_paravg", 1)[1]`), spanning
+`{python} f'{S["spm_torque_paravg_c1_nh_angle_start"]:.1f}'`° to
+`{python} f'{S["spm_torque_paravg_c1_nh_angle_end"]:.1f}'`° of knee flexion in
+the NH group and `{python} f'{S["spm_torque_paravg_c1_ik_angle_start"]:.1f}'`°
+to `{python} f'{S["spm_torque_paravg_c1_ik_angle_end"]:.1f}'`° in the IK group;
+within that cluster mean torque was
+`{python} f'{S["spm_torque_paravg_c1_nh_value"]:.1f}'` N·m in the NH group
+against `{python} f'{S["spm_torque_paravg_c1_ik_value"]:.1f}'` N·m in the IK
+group (`{python} f'{S["spm_torque_paravg_c1_pct_diff"]:+.1f}'`%). Nordic torque
+exceeded isokinetic torque over the final quarter
+(`{python} cluster("spm_torque_paravg", 2)[0]`, *p*
+`{python} cluster("spm_torque_paravg", 2)[1]`;
+`{python} f'{S["spm_torque_paravg_c2_nh_angle_start"]:.1f}'`°–`{python} f'{S["spm_torque_paravg_c2_nh_angle_end"]:.1f}'`°
+NH and `{python} f'{S["spm_torque_paravg_c2_ik_angle_start"]:.1f}'`°–`{python} f'{S["spm_torque_paravg_c2_ik_angle_end"]:.1f}'`°
+IK), where mean torque was
+`{python} f'{S["spm_torque_paravg_c2_nh_value"]:.1f}'` N·m against
+`{python} f'{S["spm_torque_paravg_c2_ik_value"]:.1f}'` N·m
+(`{python} f'{S["spm_torque_paravg_c2_pct_diff"]:+.1f}'`%).
+
+Angular velocity showed a correspondingly opposite pattern
+(*t*\*(`{python} f'{S["spm_velocity_paravg_df"]:.1f}'`) =
+`{python} f'{S["spm_velocity_paravg_tstar"]:.3f}'`). Isokinetic velocity
+exceeded Nordic velocity over the first 70% of the movement
+(`{python} cluster("spm_velocity_paravg", 2)[0]`, *p*
+`{python} cluster("spm_velocity_paravg", 2)[1]`;
+`{python} f'{S["spm_velocity_paravg_c2_ik_value"]:.1f}'` °·s^-1^ in the IK group
+against `{python} f'{S["spm_velocity_paravg_c2_nh_value"]:.1f}'` °·s^-1^ in the
+NH group), and Nordic velocity exceeded isokinetic velocity over the final fifth
+(`{python} cluster("spm_velocity_paravg", 3)[0]`, *p*
+`{python} cluster("spm_velocity_paravg", 3)[1]`;
+`{python} f'{S["spm_velocity_paravg_c3_nh_value"]:.1f}'` °·s^-1^ in the NH group
+against `{python} f'{S["spm_velocity_paravg_c3_ik_value"]:.1f}'` °·s^-1^ in the
+IK group), where the
+Nordic descent accelerates towards the horizontal while the dynamometer is
+decelerating the limb at the end of its range of motion. A further cluster
+confined to the first `{python} f'{S["spm_velocity_paravg_c1_end"]:.1f}'`% of
+the repetition (*p* = `{python} f'{S["spm_velocity_paravg_c1_p"]:.4f}'`, a single
+sample point wide) reflects the instant at which the dynamometer had not yet begun to move the limb
+and is not interpreted further.
+
+The angular ranges above make explicit that a matched percentage of the
+repetition does not correspond to a matched knee angle: the final quarter of the
+repetition covers
+`{python} f'{S["spm_torque_paravg_c2_nh_angle_start"] - S["spm_torque_paravg_c2_nh_angle_end"]:.1f}'`°
+of knee extension in the NH group but only
+`{python} f'{S["spm_torque_paravg_c2_ik_angle_start"] - S["spm_torque_paravg_c2_ik_angle_end"]:.1f}'`°
+in the IK group, because the Nordic descent accelerates while the isokinetic
+movement does not.
+
+These divergent profiles are a direct consequence of the two resistance types:
+the isokinetic dynamometer imposes an accommodating resistance at a constant
+angular velocity from the outset, whereas the Nordic descent is
+gravity-dependent, so torque rises and velocity accelerates as the lever arm
+lengthens towards the horizontal.
+
+## Repetitions and mechanical work
+
+To reach the same prescribed work per set, participants in the IK group
+performed `{python} f'{S["reps_all_perset_ik"]:.2f}'` ±
+`{python} f'{S["reps_all_perset_ik_sd"]:.2f}'` repetitions per set compared with
+`{python} f'{S["reps_all_perset_nh"]:.2f}'` ±
+`{python} f'{S["reps_all_perset_nh_sd"]:.2f}'` in the NH group, a difference of
+`{python} f'{S["reps_all_perset_diff"]:.2f}'` repetitions per set (95% CI
+[`{python} ci("reps_all_perset_ci_low", "reps_all_perset_ci_high")`];
+*t*(`{python} f'{S["reps_all_perset_df"]:.1f}'`) =
+`{python} f'{S["reps_all_perset_t"]:.2f}'`, *p*
+`{python} pv(S["reps_all_perset_p"])`, *g* =
+`{python} f'{S["reps_all_perset_g"]:.2f}'`; Figure 4A). The gap was present from the
+first session (IK `{python} f'{S["reps_all_tr1_perset_ik"]:.2f}'` versus NH
+`{python} f'{S["reps_all_tr1_perset_nh"]:.2f}'` repetitions per set) and of a
+similar magnitude at the fifteenth (IK
+`{python} f'{S["reps_all_tr15_perset_ik"]:.2f}'` versus NH
+`{python} f'{S["reps_all_tr15_perset_nh"]:.2f}'`); both groups' counts rose
+across the programme because the prescription itself progressed from five to
+eight repetitions per set.
+
+The additional repetitions were required because each isokinetic repetition
+delivered less work. Mechanical work per repetition was greater in the NH group
+(`{python} ms("workrep_nh_mean", "workrep_nh_sd")` J versus
+`{python} ms("workrep_ik_mean", "workrep_ik_sd")` J; mean difference
+`{python} f'{S["workrep_diff"]:.1f}'` J, 95% CI
+[`{python} ci("workrep_ci_low", "workrep_ci_high", nd=1)`];
+*t*(`{python} f'{S["workrep_df"]:.1f}'`) = `{python} f'{S["workrep_t"]:.2f}'`,
+*p* `{python} pv(S["workrep_p"])`, *g* = `{python} f'{S["workrep_g"]:.2f}'`;
+Figure 4B). Total work per set was consequently similar between groups
+(`{python} f'{S["bav_all_work_par_nh_mean"]:.1f}'` ±
+`{python} f'{S["bav_all_work_par_nh_sd"]:.1f}'` J versus
+`{python} f'{S["bav_all_work_par_ik_mean"]:.1f}'` ±
+`{python} f'{S["bav_all_work_par_ik_sd"]:.1f}'` J, participant means;
+Figure 4C), which is quantified in the following section.
+
+## Validity of the work- and velocity-standardization
+
+**Mechanical work per set.** Across the
+`{python} S["bav_all_work_n_pairs"]` session × set cells, the mean NH − IK
+difference was `{python} f'{S["bav_all_work_bias"]:+.1f}'` J (95% CI
+[`{python} ci("bav_all_work_bias_ci_low", "bav_all_work_bias_ci_high", nd=1, sign=True)`],
+*p* = `{python} f'{S["bav_all_work_bias_p"]:.3f}'`), equivalent to
+`{python} f'{S["bav_all_work_pct_bias"]:+.2f}'`% of the
+`{python} f'{S["bav_all_work_grand_mean"]:.1f}'` J grand mean, with 95% limits of
+agreement of `{python} f'{S["bav_all_work_loa_low"]:.1f}'` (95% CI
+[`{python} f'{S["bav_all_work_loa_low_ci_low"]:.1f}'`,
+`{python} f'{S["bav_all_work_loa_low_ci_high"]:.1f}'`]) to
+`{python} f'{S["bav_all_work_loa_high"]:+.1f}'` J (95% CI
+[`{python} f'{S["bav_all_work_loa_high_ci_low"]:.1f}'`,
+`{python} f'{S["bav_all_work_loa_high_ci_high"]:.1f}'`]), i.e.
+`{python} f'{S["bav_all_work_pct_loa_low"]:.2f}'`% to
+`{python} f'{S["bav_all_work_pct_loa_high"]:+.2f}'`%, and a concordance
+correlation coefficient of `{python} f'{S["bav_all_work_ccc"]:.3f}'` (95% CI
+[`{python} ci("bav_all_work_ccc_ci_low", "bav_all_work_ccc_ci_high", nd=3)`];
+Pearson *r* = `{python} f'{S["bav_all_work_pearson_r"]:.3f}'`). The differences
+were normally distributed (Shapiro–Wilk *p* =
+`{python} f'{S["bav_all_work_shapiro_p"]:.3f}'`). A proportional bias was present
+(slope `{python} f'{S["bav_all_work_prop_slope"]:.3f}'`, *p*
+`{python} pv(S["bav_all_work_prop_p"])`): the NH − IK difference increased with
+the magnitude of the work performed, so the near-zero average masks a small
+negative bias in the lowest-load cells and a small positive bias in the highest.
+The corresponding regression-based limits of agreement are
+`{python} f'{S["bav_all_work_reg_intercept"]:.1f}'` +
+`{python} f'{S["bav_all_work_reg_slope"]:.3f}'` × mean ±
+`{python} f'{S["bav_all_work_reg_half_width"]:.1f}'` J. Taking the participant
+rather than the cell as the unit of analysis, the between-group difference in
+work per set was `{python} f'{S["bav_all_work_par_bias"]:+.1f}'` J (95% CI
+[`{python} ci("bav_all_work_par_ci_low", "bav_all_work_par_ci_high", nd=1, sign=True)`];
+*t*(`{python} f'{S["bav_all_work_par_df"]:.1f}'`) =
+`{python} f'{S["bav_all_work_par_t"]:.2f}'`, *p* =
+`{python} f'{S["bav_all_work_par_p"]:.3f}'`, *g* =
+`{python} f'{S["bav_all_work_par_g"]:.2f}'`).
+
+**Angular velocity.** Comparing the Nordic whole-range mean with the isokinetic
+constant-velocity phase, the mean NH − IK difference was
+`{python} f'{S["bav_all_viso_bias"]:+.2f}'` °·s^-1^ (95% CI
+[`{python} ci("bav_all_viso_bias_ci_low", "bav_all_viso_bias_ci_high", sign=True)`],
+*p* `{python} pv(S["bav_all_viso_bias_p"])`),
+`{python} f'{S["bav_all_viso_pct_bias"]:+.2f}'`% of the
+`{python} f'{S["bav_all_viso_grand_mean"]:.2f}'` °·s^-1^ grand mean, with limits
+of agreement of `{python} f'{S["bav_all_viso_loa_low"]:.2f}'` (95% CI
+[`{python} f'{S["bav_all_viso_loa_low_ci_low"]:.2f}'`,
+`{python} f'{S["bav_all_viso_loa_low_ci_high"]:.2f}'`]) to
+`{python} f'{S["bav_all_viso_loa_high"]:+.2f}'` °·s^-1^ (95% CI
+[`{python} f'{S["bav_all_viso_loa_high_ci_low"]:.2f}'`,
+`{python} f'{S["bav_all_viso_loa_high_ci_high"]:.2f}'`]), i.e.
+`{python} f'{S["bav_all_viso_pct_loa_low"]:.2f}'`% to
+`{python} f'{S["bav_all_viso_pct_loa_high"]:+.2f}'`%, and a concordance
+correlation coefficient of `{python} f'{S["bav_all_viso_ccc"]:.3f}'` (95% CI
+[`{python} ci("bav_all_viso_ccc_ci_low", "bav_all_viso_ccc_ci_high", nd=3)`]).
+No proportional bias was detected (slope
+`{python} f'{S["bav_all_viso_prop_slope"]:.3f}'`, *p* =
+`{python} f'{S["bav_all_viso_prop_p"]:.3f}'`). The differences departed from
+normality (Shapiro–Wilk *p* =
+`{python} f'{S["bav_all_viso_shapiro_p"]:.3f}'`), so the fixed limits above
+should be read as approximate. Taking the participant as the unit of analysis,
+the between-group difference was
+`{python} f'{S["bav_all_viso_par_bias"]:+.2f}'` °·s^-1^ (95% CI
+[`{python} ci("bav_all_viso_par_ci_low", "bav_all_viso_par_ci_high", sign=True)`];
+*t*(`{python} f'{S["bav_all_viso_par_df"]:.1f}'`) =
+`{python} f'{S["bav_all_viso_par_t"]:.2f}'`, *p* =
+`{python} f'{S["bav_all_viso_par_p"]:.3f}'`, *g* =
+`{python} f'{S["bav_all_viso_par_g"]:.2f}'`).
+
+Work per set was thus equated to within
+`{python} f'{abs(S["bav_all_work_pct_bias"]):.1f}'`% of its grand mean and the
+prescribed velocity delivered to within
+`{python} f'{abs(S["bav_all_viso_pct_bias"]):.1f}'`% of its target, with
+concordance correlation coefficients above 0.95 in both cases (Figure 5). Neither residual
+bias is negligible in a statistical sense — both cell-level confidence intervals
+exclude zero — but both are an order of magnitude smaller than the
+between-modality differences reported in Section 2.2, and at the participant
+level neither difference is distinguishable from zero.
+
+The velocity result depends materially on excluding the dynamometer's ramps. If
+isokinetic velocity is instead averaged over the whole repetition window, the
+apparent NH − IK difference rises to
+`{python} f'{S["bav_all_vwin_bias"]:+.2f}'` °·s^-1^
+(`{python} f'{S["bav_all_vwin_pct_bias"]:+.2f}'`%), with limits of agreement of
+`{python} sg("bav_all_vwin_loa_low")` to
+`{python} sg("bav_all_vwin_loa_high")` °·s^-1^ lying entirely above zero and a
+concordance correlation coefficient of
+`{python} f'{S["bav_all_vwin_ccc"]:.3f}'`. The acceleration and deceleration
+ramps account for `{python} f'{S["velphase_ramp_cost"]:.2f}'` of that
+`{python} f'{S["bav_all_vwin_bias"]:.2f}'` °·s^-1^
+(`{python} f'{100 * S["velphase_ramp_cost"] / S["bav_all_vwin_bias"]:.0f}'`%),
+leaving the small residual reported above. Since the ramps are a property of the
+apparatus and formed no part of the prescription, the whole-window figure
+understates the fidelity with which the prescribed velocity was delivered.
+
+Restricting both analyses to the analysed subset of repetitions changes two
+things and should be read with the filter's known direction in mind
+(Section 1.2). The work bias falls to
+`{python} sg("bav_analysed_work_bias", 1)` J
+(`{python} sg("bav_analysed_work_pct_bias")`%; 95% CI
+[`{python} ci("bav_analysed_work_bias_ci_low", "bav_analysed_work_bias_ci_high", nd=1, sign=True)`],
+*p* = `{python} f'{S["bav_analysed_work_bias_p"]:.3f}'`), and the velocity bias
+to `{python} sg("bav_analysed_viso_bias")` °·s^-1^
+(`{python} sg("bav_analysed_viso_pct_bias")`%) — but the velocity filter removes
+precisely the repetitions that separate the groups, so this near-perfect
+agreement is partly manufactured by the filter and is not independent
+corroboration. Agreement remains excellent under both populations, which is the
+substantive point.
+
+## Time course of adaptation
+
+**Discrete outcomes.** Mean and peak torque, knee range of motion, angle at peak
+torque and mean knee angular velocity across the 15 training sessions are shown
+in Figure 6. Linear mixed models retained all `{python} S["lmm_n_nh"]` NH and
+`{python} S["lmm_n_ik"]` IK participants and used
+`{python} n_cells` participant × session cells.
+
+The largest between-modality difference was in the knee angle at which peak
+torque occurred, which was markedly more flexed in the NH group
+(`{python} d["angle_at_peak_torque_nh"]`° versus
+`{python} d["angle_at_peak_torque_ik"]`°; estimated difference
+`{python} d["angle_at_peak_torque_est"]`°, 95% CI
+[`{python} d["angle_at_peak_torque_ci"]`],
+*t*(`{python} S["lmmt_df"]`) = `{python} d["angle_at_peak_torque_t"]`, *p*
+`{python} d["angle_at_peak_torque_p"]`), consistent with the regional
+displacement of loading identified by the whole-curve analysis. Peak torque was
+also higher in the NH group (`{python} d["peak_torque_nh"]` N·m versus
+`{python} d["peak_torque_ik"]` N·m; difference `{python} d["peak_torque_est"]`
+N·m [`{python} d["peak_torque_ci"]`], *t*(`{python} S["lmmt_df"]`) =
+`{python} d["peak_torque_t"]`, *p* `{python} d["peak_torque_p"]`).
+
+No between-group difference was observed for mean torque
+(`{python} d["mean_torque_nh"]` N·m versus `{python} d["mean_torque_ik"]` N·m;
+difference `{python} d["mean_torque_est"]` N·m [`{python} d["mean_torque_ci"]`],
+*t*(`{python} S["lmmt_df"]`) = `{python} d["mean_torque_t"]`, *p*
+`{python} d["mean_torque_p"]`) or for knee range of motion
+(`{python} d["knee_ROM_nh"]`° versus `{python} d["knee_ROM_ik"]`°; difference
+`{python} d["knee_ROM_est"]`° [`{python} d["knee_ROM_ci"]`],
+*t*(`{python} S["lmmt_df"]`) = `{python} d["knee_ROM_t"]`, *p*
+`{python} d["knee_ROM_p"]`). For mean knee angular velocity quantified over the
+constant-velocity phase — the quantity the two modalities were matched on — the
+groups did not differ meaningfully
+(NH `{python} ms("lmmiso_knee_v_desc_nh_mean", "lmmiso_knee_v_desc_nh_sd")`
+°/s versus IK
+`{python} ms("lmmiso_knee_v_desc_ik_mean", "lmmiso_knee_v_desc_ik_sd")` °/s;
+difference `{python} f'{S["lmmiso_knee_v_nhmik_est"]:+.2f}'` °/s, 95% CI
+[`{python} ci("lmmiso_knee_v_ci_low", "lmmiso_knee_v_ci_high", sign=True)`],
+χ^2^(`{python} S["lmmiso_knee_v_group_df"]`) =
+`{python} f'{S["lmmiso_knee_v_group_chi2"]:.1f}'`, *p* =
+`{python} f'{S["lmmiso_knee_v_group_p"]:.3f}'`), the interval including zero. A
+model of the same form fitted to the whole-window velocity returns a difference
+of the opposite sign (`{python} d["knee_v_mean_est"]` °/s
+[`{python} d["knee_v_mean_ci"]`], *p* `{python} d["knee_v_mean_p"]`), which
+reproduces at the level of the discrete outcomes the ramp artefact described
+above. Neither estimate is robust: whichever velocity definition is used, the
+group effect is the only one of the five that does not survive a correction for
+the number of outcomes tested, and it should be read as no meaningful difference
+rather than as a difference in either direction.
+
+A significant main effect of time was observed for all five outcomes (angle at
+peak torque χ^2^(`{python} d["angle_at_peak_torque_time_df"]`) =
+`{python} d["angle_at_peak_torque_time_chi2"]`; peak torque
+χ^2^(`{python} d["peak_torque_time_df"]`) =
+`{python} d["peak_torque_time_chi2"]`; mean torque
+χ^2^(`{python} d["mean_torque_time_df"]`) =
+`{python} d["mean_torque_time_chi2"]`; knee range of motion
+χ^2^(`{python} d["knee_ROM_time_df"]`) = `{python} d["knee_ROM_time_chi2"]`;
+mean knee angular velocity χ^2^(`{python} S["lmmiso_knee_v_time_df"]`) =
+`{python} f'{S["lmmiso_knee_v_time_chi2"]:.1f}'`; all *p* < 0.001), indicating
+that both modalities produced changes across the training programme.
+
+A group × time interaction was found for mean torque only
+(χ^2^(`{python} d["mean_torque_interaction_df"]`) =
+`{python} d["mean_torque_interaction_chi2"]`, *p*
+`{python} d["mean_torque_interaction_p"]`); the interaction was not significant
+for the angle at peak torque
+(χ^2^(`{python} d["angle_at_peak_torque_interaction_df"]`) =
+`{python} d["angle_at_peak_torque_interaction_chi2"]`, *p* =
+`{python} f'{S["lmm_angle_at_peak_torque_interaction_p"]:.3f}'`), peak torque
+(χ^2^(`{python} d["peak_torque_interaction_df"]`) =
+`{python} d["peak_torque_interaction_chi2"]`, *p* =
+`{python} f'{S["lmm_peak_torque_interaction_p"]:.3f}'`), knee range of motion
+(χ^2^(`{python} d["knee_ROM_interaction_df"]`) =
+`{python} d["knee_ROM_interaction_chi2"]`, *p* =
+`{python} f'{S["lmm_knee_ROM_interaction_p"]:.3f}'`) or mean knee angular
+velocity (χ^2^(`{python} S["lmmiso_knee_v_interaction_df"]`) =
+`{python} f'{S["lmmiso_knee_v_interaction_chi2"]:.1f}'`, *p* =
+`{python} f'{S["lmmiso_knee_v_interaction_p"]:.3f}'`). The time course of
+adaptation therefore differed between modalities for mean torque but not for the
+remaining outcomes.
+
+**Whole-curve progression.** Session-by-session comparisons of the torque curves
+against the first training session are shown in Figure 6. With the per-comparison
+α Bonferroni-corrected across the 14 comparisons, the IK group differed from
+session 1 in `{python} S["prog_ik_bonf_n_sig"]` of
+`{python} S["prog_n_comparisons"]` sessions, continuously from session
+`{python} S["prog_ik_bonf_first_sustained"]` onwards, whereas the NH group did
+so in `{python} S["prog_nh_bonf_n_sig"]` sessions (sessions
+`{python} ", ".join(str(x) for x in S["prog_nh_bonf_sig_sessions"])`). Without
+that correction the same contrast is significant in
+`{python} S["prog_ik_unc_n_sig"]` of `{python} S["prog_n_comparisons"]` sessions
+for the IK group, continuously from session
+`{python} S["prog_ik_unc_first_sustained"]`, and in
+`{python} S["prog_nh_unc_n_sig"]` sessions for the NH group, continuously from
+session `{python} S["prog_nh_unc_first_sustained"]`.
+
+Where torque increased, the increases were concentrated in the later portion of
+the movement, and in the IK group the affected region widened progressively
+across the programme. Under the corrected α, the final-session cluster in the IK
+group extended from `{python} f'{S["prog_ik_bonf_tr15_start"]:.1f}'`% to
+`{python} f'{S["prog_ik_bonf_tr15_end"]:.1f}'`% of the repetition
+(*p* `{python} pv(S["prog_ik_bonf_tr15_p"])`, *n* =
+`{python} S["prog_ik_bonf_tr15_n"]`), whereas **no cluster survived correction in
+the NH group at the final session**. Without correction the corresponding
+clusters were `{python} f'{S["prog_ik_unc_tr15_start"]:.1f}'`–`{python} f'{S["prog_ik_unc_tr15_end"]:.1f}'`%
+in the IK group and
+`{python} f'{S["prog_nh_unc_tr15_start"]:.1f}'`–`{python} f'{S["prog_nh_unc_tr15_end"]:.1f}'`%
+in the NH group (*p* `{python} pv(S["prog_nh_unc_tr15_p"])`, *n* =
+`{python} S["prog_nh_unc_tr15_n"]`). Two features of this analysis constrain its
+interpretation: the number of participants contributing to each paired
+comparison varied between 9 and 13 because both sessions had to be recorded for
+a participant to be included, and the curves compared here are the three
+repetitions of highest peak torque drawn from a pool that grows across the
+programme, which inflates the apparent progression.

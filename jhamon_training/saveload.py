@@ -18,7 +18,28 @@ def save_obj(obj, path):
 
 
 def load_obj(name, path):
-    import pickle
+    """Load a pickled object, tolerating pickles written by older pandas.
 
-    with open((path / name), "rb") as f:
-        return pickle.load(f)
+    The cached ``nht_results.pkl`` / ``ikt_results.pkl`` were written under
+    pandas <2.0 and contain DataFrames whose internal blocks pickle a raw
+    ``slice`` where pandas >=2.0 expects a ``BlockPlacement``. A plain
+    ``pickle.load`` therefore dies with::
+
+        TypeError: Argument 'placement' has incorrect type
+                   (expected pandas._libs.internals.BlockPlacement, got slice)
+
+    ``pd.read_pickle`` routes through pandas' own compatibility unpickler,
+    which rewrites those blocks on the way in, so it reads both the legacy and
+    the current caches. Falling back to it (rather than replacing outright)
+    keeps non-pandas payloads working exactly as before.
+    """
+    import pandas as pd
+
+    target = path / name
+    with open(target, "rb") as f:
+        try:
+            return pickle.load(f)
+        except TypeError:
+            pass
+
+    return pd.read_pickle(target)

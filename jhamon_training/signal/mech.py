@@ -544,3 +544,37 @@ def getMVC(mvc_path, pth, freq=2000):
         MVIC["BF_rms"] = np.array([np.mean(EMG_RMS[2, idx1:idx2])])
 
     return MVIC
+
+
+def getMVIF(mvc_path, pth):
+    """Maximal voluntary isometric flexion torque (MVIF) from one MVC test.
+
+    Reads the raw ``mvc_*`` file, calibrates and low-pass filters the force and
+    position channels (``_filcalibmech``), applies gravity correction using the
+    matching ``passive_*`` file in ``pth`` (``_corrigegrav``), and returns the
+    peak gravity-corrected knee-flexion torque.
+
+    Unlike :func:`getMVC`, this computes the mechanical MVIF only and ignores the
+    EMG channels, so it runs on the PRE familiarization sessions regardless of
+    whether EMG was recorded. Depends only on helpers vendored in this module,
+    so it has no dependency on the base ``jhamon`` package.
+
+    Arguments:
+        mvc_path: Path to the raw ``mvc_*`` text file.
+        pth: Path to the test's ``mtu`` directory; must contain a ``passive_*``
+            file, which ``_corrigegrav`` uses for gravity correction.
+
+    Returns:
+        float -- peak gravity-corrected isometric flexion torque (N.m).
+    """
+    import numpy as np
+
+    mvc_raw = np.genfromtxt(mvc_path, delimiter=";", skip_header=2)
+
+    # mechanical channels: column 4 = force, column 6 = position
+    force = mvc_raw[:, 4]
+    pos = mvc_raw[:, 6]
+    torque, position = _filcalibmech(force, pos)
+    torque_gcorrected = _corrigegrav(position, torque, pth)
+
+    return float(np.max(torque_gcorrected))

@@ -25,7 +25,8 @@ from jhamon_training.plot.plot_knee_velocity_comparison import (
 from jhamon_training.plot.plot_work_comparison import plot_work_comparison
 from jhamon_training.plot.plot_peak_torque_evolution import plot_peak_torque_evolution
 from jhamon_training.plot.plot_repetition_count import plot_repetition_count
-from jhamon_training.stats.mixed_anova_analysis import run_mixed_anova
+from jhamon_training.stats.mixed_lmm_analysis import run_mixed_lmm
+from jhamon_training.stats.agreement import run_agreement
 import json
 from jhamon_training.stats.torque_stats import report_torque_stats
 from jhamon_training.plot.plot_training_progression import plot_training_progression
@@ -90,19 +91,27 @@ plot_figure_3_ridgeline(
     training_disc, output_path=figures_path / "Figure_3_ridgeline.png"
 )
 
-# # Report torque statistics
-# report_torque_stats(training_disc, results_output_path)
+# Report torque statistics
+report_torque_stats(training_disc, results_output_path)
 
 # # Repetition statistics
+# NOTE: left disabled on purpose. It runs without error, but it rewrites
+# nh_reps/ik_reps/total_reps from the POST-filter frame, while
+# analyze_discrete_variables above already wrote those three keys — plus the
+# nh_percentage and prescribed_total_nh derived from them — from the PRE-filter
+# frame. Enabling it changes the three counts without recomputing the
+# percentage, so the Results sentence in jhamon_results.qmd would quote a
+# repetition count and a percentage that no longer refer to the same
+# denominator. Re-enable only together with a fix for that inconsistency.
 # save_repetition_stats(training_disc, results_output_path)
 
-# # Knee work
-# plot_work_comparison(training_disc, output_path=figures_path / "work_comparison.png")
+# Knee work
+plot_work_comparison(training_disc, output_path=figures_path / "work_comparison.png")
 
-# # Knee velocity
-# plot_knee_velocity_comparison(
-#     training_disc, output_path=figures_path / "knee_velocity_comparison.png"
-# )
+# Knee velocity
+plot_knee_velocity_comparison(
+    training_disc, output_path=figures_path / "knee_velocity_comparison.png"
+)
 
 # Mechanical patterns.
 ################# SPM STATISTICS ##############
@@ -117,12 +126,25 @@ plot_peak_torque_evolution(
     training_disc, output_path=figures_path / "peak_torque_evolution.png"
 )
 
-# Run mean torque ANOVA analysis
-anova_results = run_mixed_anova(
-    training_disc=training_disc,
-    output_path=figures_path / "mean_torque_anova.png",
-    save_results=False,
-)
+# Discrete-outcome analysis: linear mixed model (random intercept per
+# participant) on the top-3 cell means. Replaces the complete-case two-way
+# mixed ANOVA, which listwise-dropped the 9 participants with incomplete
+# session records (collapsing to 6 NH + 12 IK); the LMM keeps all 13 NH + 14
+# IK and reproduces the same conclusions with full power. Writes lmm_* keys to
+# training_stats.json. (run_mixed_anova remains in the repo for reference.)
+lmm_results = run_mixed_lmm(training_disc, write_json=True)
+
+# Prescription-matching check: Bland-Altman agreement between NH and IK for the
+# two outcomes the two modalities were matched on — work per set and mean knee
+# angular velocity. One point per (session x set) cell, NH group mean vs IK
+# group mean, difference = NH - IK; reports bias, 95% limits of agreement,
+# proportional bias and the concordance correlation. This is the paper's primary
+# validity result: the whole design rests on the claim that the two modalities
+# delivered an equivalent mechanical dose, and until now the bias/LoA were
+# computed inside the two figures above and thrown away, so the Methods promised
+# a Bland-Altman analysis that no number in training_stats.json backed. Must run
+# AFTER run_mixed_lmm, which writes the JSON; this one merges ba_* keys into it.
+agreement_results = run_agreement(training_disc, write_json=True)
 
 
 # Create filtered dataset with top 3 repetitions per participant and session
