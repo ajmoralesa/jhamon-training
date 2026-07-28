@@ -76,16 +76,17 @@ from typing import Dict
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.colors import to_rgb
+from matplotlib.colors import LinearSegmentedColormap, to_rgb
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from scipy.stats import gaussian_kde
 
 from .style import (
-    COL_DOUBLE,
+    COL_ONE_HALF,
     GRID,
     GROUP_COLOR,
     GROUP_LABEL,
+    IK as IK_COLOR,
     INK_SOFT,
     NH as NH_COLOR,
     panel_letter,
@@ -140,13 +141,20 @@ def _tidy(disc: pd.DataFrame) -> pd.DataFrame:
 
 
 def set_palette(n: int = MAX_SETS) -> list:
-    """Sequential colours for set 1..n, dark early to light late.
+    """Sequential colours for set 1..n, light early to dark late.
 
-    Truncated short of viridis' palest yellow, which has too little contrast
-    against a white page to carry a filled shape.
+    Panel A draws one group only, so it takes that group's own hue rather than a
+    second colour scheme: this is ``style.session_ramp`` applied to sets instead
+    of sessions. The light end stops well short of session_ramp's near-white
+    tint, because these bands are overlaid six deep at low opacity rather than
+    drawn as six separate lines, and a 0.88-lightness teal disappears under that
+    treatment.
     """
-    cmap = plt.get_cmap("viridis")
-    return [cmap(x) for x in np.linspace(0.04, 0.88, n)]
+    base = np.array(to_rgb(IK_COLOR))
+    light = base + (1.0 - base) * 0.70
+    dark = base * 0.32
+    cmap = LinearSegmentedColormap.from_list("ik_sets", [light, base, dark])
+    return [cmap(x) for x in np.linspace(0.0, 1.0, n)]
 
 
 def _shade(rgba, factor: float = 0.72):
@@ -222,8 +230,8 @@ def _set_ridgeline(ax, per_set: pd.DataFrame, x_grid: np.ndarray) -> int:
             # which reads as a session trend that is not in the data; the
             # outline is what makes an individual set traceable through the
             # overlap.
-            ax.fill_between(x_grid, i, i + y, color=colour, alpha=0.22, lw=0, zorder=z)
-            ax.plot(x_grid, i + y, color=_shade(colour, 0.88), lw=1.1,
+            ax.fill_between(x_grid, i, i + y, color=colour, alpha=0.20, lw=0, zorder=z)
+            ax.plot(x_grid, i + y, color=_shade(colour, 0.80), lw=1.05,
                     alpha=0.98, zorder=z, solid_joinstyle="round")
     return dropped
 
@@ -296,7 +304,7 @@ def make_figure(disc_all: pd.DataFrame, out_dir: Path | None = None,
     per_set["setnum"] = per_set["set"].map(_set_num)
 
     fig, (ax_a, ax_b, ax_c) = plt.subplots(
-        1, 3, figsize=(COL_DOUBLE, 6.0),
+        1, 3, figsize=(COL_ONE_HALF + 1.05, 6.6),
         gridspec_kw={"width_ratios": [1.22, 1.0, 1.0], "wspace": 0.14},
     )
 
@@ -322,8 +330,8 @@ def make_figure(disc_all: pd.DataFrame, out_dir: Path | None = None,
     set_colours = set_palette()
     ax_a.legend(
         handles=[
-            Patch(facecolor=(*set_colours[s - 1][:3], 0.22),
-                  edgecolor=_shade(set_colours[s - 1], 0.88), lw=1.1, label=f"Set {s}")
+            Patch(facecolor=(*set_colours[s - 1][:3], 0.20),
+                  edgecolor=_shade(set_colours[s - 1], 0.80), lw=1.05, label=f"Set {s}")
             for s in range(1, MAX_SETS + 1)
         ],
         loc="lower right", bbox_to_anchor=(1.02, -0.015),
@@ -361,12 +369,13 @@ def make_figure(disc_all: pd.DataFrame, out_dir: Path | None = None,
 
     fig.text(
         0.5, 0.015,
-        "One ridge per training session, session 1 at the bottom. A: repetitions per set in the isokinetic\n"
-        "group, one kernel-smoothed density per set. The programme added sets as it progressed (three in\n"
-        "session 1, six from session 12), so later ridges carry more colours; sets are comparable within a\n"
-        "session, not across them. The Nordic count was prescribed and met in 83.8% of sets, so it is drawn\n"
-        "as a reference rule rather than a distribution. B, C: kernel density of every repetition performed.",
-        ha="center", va="top", color=INK_SOFT, fontsize=6.8, linespacing=1.4,
+        "One ridge per training session, session 1 at the bottom. A: repetitions per set in\n"
+        "the isokinetic group, one kernel-smoothed density per set, light to dark. The\n"
+        "programme added sets as it progressed (three in session 1, six from session 12),\n"
+        "so later ridges carry more bands; sets compare within a session, not across them.\n"
+        "The Nordic count was prescribed and met in 83.8% of sets, so it is drawn as a\n"
+        "reference rule. B, C: kernel density of every repetition performed, by group.",
+        ha="center", va="top", color=INK_SOFT, fontsize=6.5, linespacing=1.4,
     )
 
     if out_dir is None:
